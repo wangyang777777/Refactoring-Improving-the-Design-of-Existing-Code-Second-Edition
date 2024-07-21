@@ -13,25 +13,25 @@
 曾用名：以数据类取代记录（Replace Record with Data Class）
 
 ```js
-organization = { name: "Acme Gooseberries", country: "GB" };
+organization = { name: "Acme Gooseberries", country: "GB" }
 
 class Organization {
-  constructor(data) {
-    this._name = data.name;
-    this._country = data.country;
-  }
-  get name() {
-    return this._name;
-  }
-  set name(arg) {
-    this._name = arg;
-  }
-  get country() {
-    return this._country;
-  }
-  set country(arg) {
-    this._country = arg;
-  }
+    constructor(data) {
+        this._name = data.name
+        this._country = data.country
+    }
+    get name() {
+        return this._name
+    }
+    set name(arg) {
+        this._name = arg
+    }
+    get country() {
+        return this._country
+    }
+    set country(arg) {
+        this._country = arg
+    }
 }
 ```
 
@@ -74,34 +74,34 @@ class Organization {
 首先，我从一个常量开始，该常量在程序中被大量使用。
 
 ```js
-const organization = { name: "Acme Gooseberries", country: "GB" };
+const organization = { name: "Acme Gooseberries", country: "GB" }
 ```
 
 这是一个普通的 JavaScript 对象，程序中很多地方都把它当作记录型结构在使用。以下是对其进行读取和更新的地方：
 
 ```js
-result += `<h1>${organization.name}</h1>`;
-organization.name = newName;
+result += `<h1>${organization.name}</h1>`
+organization.name = newName
 ```
 
 重构的第一步很简单，先施展一下封装变量（132）。
 
 ```js
 function getRawDataOfOrganization() {
-  return organization;
+    return organization
 }
 ```
 
 #### 读取的例子...
 
 ```js
-result += `<h1>${getRawDataOfOrganization().name}</h1>`;
+result += `<h1>${getRawDataOfOrganization().name}</h1>`
 ```
 
 #### 更新的例子...
 
 ```js
-getRawDataOfOrganization().name = newName;
+getRawDataOfOrganization().name = newName
 ```
 
 这里施展的不全是标准的封装变量（132）手法，我刻意为设值函数取了一个又丑又长、容易搜索的名字，因为我有意不让它在这次重构中活得太久。
@@ -112,9 +112,9 @@ getRawDataOfOrganization().name = newName;
 
 ```js
 class Organization {
-  constructor(data) {
-    this._data = data;
-  }
+    constructor(data) {
+        this._data = data
+    }
 }
 ```
 
@@ -122,15 +122,15 @@ class Organization {
 
 ```js
 const organization = new Organization({
-  name: "Acme Gooseberries",
-  country: "GB",
-});
+    name: "Acme Gooseberries",
+    country: "GB"
+})
 
 function getRawDataOfOrganization() {
-  return organization._data;
+    return organization._data
 }
 function getOrganization() {
-  return organization;
+    return organization
 }
 ```
 
@@ -139,13 +139,15 @@ function getOrganization() {
 #### class Organization...
 
 ```js
-set name(aString) {this._data.name = aString;}
+set name(aString) {
+    this._data.name = aString
+}
 ```
 
 #### 客户端...
 
 ```js
-getOrganization().name = newName;
+getOrganization().name = newName
 ```
 
 同样地，我将所有读取记录的地方，用一个取值函数来替代。
@@ -153,23 +155,25 @@ getOrganization().name = newName;
 #### class Organization...
 
 ```js
-get name() {return this._data.name;}
+get name() {
+    return this._data.name
+}
 ```
 
 #### 客户端...
 
 ```js
-result += `<h1>${getOrganization().name}</h1>`;
+result += `<h1>${getOrganization().name}</h1>`
 ```
 
 完成引用点的替换后，就可以兑现我之前的死亡威胁，为那个名称丑陋的函数送终了。
 
 ```js
 function getRawDataOfOrganization() {
-  return organization._data;
+    return organization._data
 }
 function getOrganization() {
-  return organization;
+    return organization
 }
 ```
 
@@ -177,22 +181,22 @@ function getOrganization() {
 
 ```js
 class Organization {
-  constructor(data) {
-    this._name = data.name;
-    this._country = data.country;
-  }
-  get name() {
-    return this._name;
-  }
-  set name(aString) {
-    this._name = aString;
-  }
-  get country() {
-    return this._country;
-  }
-  set country(aCountryCode) {
-    this._country = aCountryCode;
-  }
+    constructor(data) {
+        this._name = data.name
+        this._country = data.country
+    }
+    get name() {
+        return this._name
+    }
+    set name(aString) {
+        this._name = aString
+    }
+    get country() {
+        return this._country
+    }
+    set country(aCountryCode) {
+        this._country = aCountryCode
+    }
 }
 ```
 
@@ -205,26 +209,26 @@ class Organization {
 作为例子，这里有一个嵌套层级更深的数据：它是一组顾客信息的集合，保存在散列映射中，并通过顾客 ID 进行索引。
 
 ```js
-"1920": {
-  name: "martin",
-  id: "1920",
-  usages: {
-    "2016": {
-      "1": 50,
-      "2": 55,
-      // remaining months of the year
-    },
-    "2015": {
-      "1": 70,
-      "2": 63,
-      // remaining months of the year
+1920: {
+    name: "martin",
+    id: "1920",
+    usages: {
+        2016: {
+            1: 50,
+            2: 55
+            // remaining months of the year
+        },
+        2015: {
+            1: 70,
+            2: 63
+            // remaining months of the year
+        }
     }
-  }
 },
-"38673": {
-  name: "neal",
-  id: "38673",
-  // more customers in a similar form
+38673: {
+    name: "neal",
+    id: "38673"
+    // more customers in a similar form
 }
 ```
 
@@ -233,16 +237,16 @@ class Organization {
 #### 更新的例子...
 
 ```js
-customerData[customerID].usages[year][month] = amount;
+customerData[customerID].usages[year][month] = amount
 ```
 
 #### 读取的例子...
 
 ```js
 function compareUsage(customerID, laterYear, month) {
-  const later = customerData[customerID].usages[laterYear][month];
-  const earlier = customerData[customerID].usages[laterYear - 1][month];
-  return { laterAmount: later, change: later - earlier };
+    const later = customerData[customerID].usages[laterYear][month]
+    const earlier = customerData[customerID].usages[laterYear - 1][month]
+    return { laterAmount: later, change: later - earlier }
 }
 ```
 
@@ -250,26 +254,26 @@ function compareUsage(customerID, laterYear, month) {
 
 ```js
 function getRawDataOfCustomers() {
-  return customerData;
+    return customerData
 }
 function setRawDataOfCustomers(arg) {
-  customerData = arg;
+    customerData = arg
 }
 ```
 
 #### 更新的例子...
 
 ```js
-getRawDataOfCustomers()[customerID].usages[year][month] = amount;
+getRawDataOfCustomers()[customerID].usages[year][month] = amount
 ```
 
 #### 读取的例子...
 
 ```js
 function compareUsage(customerID, laterYear, month) {
-  const later = getRawDataOfCustomers()[customerID].usages[laterYear][month];
-  const earlier = getRawDataOfCustomers()[customerID].usages[laterYear - 1][month];
-  return { laterAmount: later, change: later - earlier };
+    const later = getRawDataOfCustomers()[customerID].usages[laterYear][month]
+    const earlier = getRawDataOfCustomers()[customerID].usages[laterYear - 1][month]
+    return { laterAmount: later, change: later - earlier }
 }
 ```
 
@@ -277,9 +281,9 @@ function compareUsage(customerID, laterYear, month) {
 
 ```js
 class CustomerData {
-  constructor(data) {
-    this._data = data;
-  }
+    constructor(data) {
+        this._data = data
+    }
 }
 ```
 
@@ -287,13 +291,13 @@ class CustomerData {
 
 ```js
 function getCustomerData() {
-  return customerData;
+    return customerData
 }
 function getRawDataOfCustomers() {
-  return customerData._data;
+    return customerData._data
 }
 function setRawDataOfCustomers(arg) {
-  customerData = new CustomerData(arg);
+    customerData = new CustomerData(arg)
 }
 ```
 
@@ -302,7 +306,7 @@ function setRawDataOfCustomers(arg) {
 #### 更新的例子...
 
 ```js
-getRawDataOfCustomers()[customerID].usages[year][month] = amount;
+getRawDataOfCustomers()[customerID].usages[year][month] = amount
 ```
 
 “做法”部分说，接下来要通过一个访问函数来返回原始的顾客数据，如果访问函数还不存在就创建一个。现在顾客类还没有设值函数，而且这个更新操作对结构进行了深入查找，因此是时候创建一个设值函数了。我会先用提炼函数（106），将层层深入数据结构的查找操作提炼到函数里。
@@ -310,14 +314,14 @@ getRawDataOfCustomers()[customerID].usages[year][month] = amount;
 #### 更新的例子...
 
 ```js
-setUsage(customerID, year, month, amount);
+setUsage(customerID, year, month, amount)
 ```
 
 #### 顶层作用域...
 
 ```js
 function setUsage(customerID, year, month, amount) {
-  getRawDataOfCustomers()[customerID].usages[year][month] = amount;
+    getRawDataOfCustomers()[customerID].usages[year][month] = amount
 }
 ```
 
@@ -326,14 +330,14 @@ function setUsage(customerID, year, month, amount) {
 #### 更新的例子...
 
 ```js
-getCustomerData().setUsage(customerID, year, month, amount);
+getCustomerData().setUsage(customerID, year, month, amount)
 ```
 
 #### class CustomerData...
 
 ```js
 setUsage(customerID, year, month, amount) {
-  this._data[customerID].usages[year][month] = amount;
+    this._data[customerID].usages[year][month] = amount
 }
 ```
 
@@ -345,13 +349,13 @@ setUsage(customerID, year, month, amount) {
 
 ```js
 function getCustomerData() {
-  return customerData;
+    return customerData
 }
 function getRawDataOfCustomers() {
-  return customerData.rawData;
+    return customerData.rawData
 }
 function setRawDataOfCustomers(arg) {
-  customerData = new CustomerData(arg);
+    customerData = new CustomerData(arg)
 }
 ```
 
@@ -359,7 +363,7 @@ function setRawDataOfCustomers(arg) {
 
 ```js
 get rawData() {
-  return _.cloneDeep(this._data);
+    return _.cloneDeep(this._data)
 }
 ```
 
@@ -375,7 +379,7 @@ get rawData() {
 
 ```js
 usage(customerID, year, month) {
-  return this._data[customerID].usages[year][month];
+    return this._data[customerID].usages[year][month]
 }
 ```
 
@@ -383,9 +387,9 @@ usage(customerID, year, month) {
 
 ```js
 function compareUsage(customerID, laterYear, month) {
-  const later = getCustomerData().usage(customerID, laterYear, month);
-  const earlier = getCustomerData().usage(customerID, laterYear - 1, month);
-  return { laterAmount: later, change: later - earlier };
+    const later = getCustomerData().usage(customerID, laterYear, month)
+    const earlier = getCustomerData().usage(customerID, laterYear - 1, month)
+    return { laterAmount: later, change: later - earlier }
 }
 ```
 
@@ -397,7 +401,7 @@ function compareUsage(customerID, laterYear, month) {
 
 ```js
 get rawData() {
-  return _.cloneDeep(this._data);
+    return _.cloneDeep(this._data)
 }
 ```
 
@@ -405,9 +409,9 @@ get rawData() {
 
 ```js
 function compareUsage(customerID, laterYear, month) {
-  const later = getCustomerData().rawData[customerID].usages[laterYear][month];
-  const earlier = getCustomerData().rawData[customerID].usages[laterYear - 1][month];
-  return { laterAmount: later, change: later - earlier };
+    const later = getCustomerData().rawData[customerID].usages[laterYear][month]
+    const earlier = getCustomerData().rawData[customerID].usages[laterYear - 1][month]
+    return { laterAmount: later, change: later - earlier }
 }
 ```
 
@@ -419,14 +423,21 @@ function compareUsage(customerID, laterYear, month) {
 
 ```js
 class Person {
-  get courses() {return this._courses;}
-  set courses(aList) {this._courses = aList;}
-
+    get courses() {
+        return this._courses
+    }
+    set courses(aList) {
+        this._courses = aList
+    }
+}
 
 class Person {
-  get courses() {return this._courses.slice();}
-  addCourse(aCourse) { ... }
-  removeCourse(aCourse) { ... }
+    get courses() {
+        return this._courses.slice()
+    }
+    addCourse(aCourse) {...}
+    removeCourse(aCourse) {...}
+}
 ```
 
 ### 动机
@@ -470,32 +481,40 @@ class Person {
 #### class Person...
 
 ```js
-constructor (name) {
-  this._name = name;
-  this._courses = [];
+constructor(name) {
+    this._name = name
+    this._courses = []
 }
-get name() {return this._name;}
-get courses() {return this._courses;}
-set courses(aList) {this._courses = aList;}
+get name() {
+    return this._name
+}
+get courses() {
+    return this._courses
+}
+set courses(aList) {
+    this._courses = aList
+}
 ```
 
 #### class Course...
 
 ```js
 constructor(name, isAdvanced) {
-  this._name = name;
-  this._isAdvanced = isAdvanced;
+    this._name = name
+    this._isAdvanced = isAdvanced
 }
-get name() {return this._name;}
-get isAdvanced() {return this._isAdvanced;}
+get name() {
+    return this._name
+}
+get isAdvanced() {
+    return this._isAdvanced
+}
 ```
 
 客户端会使用课程集合来获取课程的相关信息。
 
 ```js
-numAdvancedCourses = aPerson.courses
-  .filter(c => c.isAdvanced)
-  .length;
+numAdvancedCourses = aPerson.courses.filter((c) => c.isAdvanced).length
 ```
 
 有些开发者可能觉得这个类已经得到了恰当的封装，毕竟，所有的字段都被访问函数保护到了。但我要指出，对课程列表的封装还不完整。诚然，对列表整体的任何更新操作，都能通过设值函数得到控制。
@@ -503,8 +522,8 @@ numAdvancedCourses = aPerson.courses
 #### 客户端代码...
 
 ```js
-const basicCourseNames = readBasicCourseNames(filename);
-aPerson.courses = basicCourseNames.map(name => new Course(name, false));
+const basicCourseNames = readBasicCourseNames(filename)
+aPerson.courses = basicCourseNames.map((name) => new Course(name, false))
 ```
 
 但客户端也可能发现，直接更新课程列表显然更容易。
@@ -513,7 +532,7 @@ aPerson.courses = basicCourseNames.map(name => new Course(name, false));
 
 ```js
 for (const name of readBasicCourseNames(filename)) {
-  aPerson.courses.push(new Course(name, false));
+    aPerson.courses.push(new Course(name, false))
 }
 ```
 
@@ -525,12 +544,17 @@ for (const name of readBasicCourseNames(filename)) {
 
 ```js
 addCourse(aCourse) {
-  this._courses.push(aCourse);
+    this._courses.push(aCourse)
 }
-removeCourse(aCourse, fnIfAbsent = () => {throw new RangeError();}) {
-  const index = this._courses.indexOf(aCourse);
-  if (index === -1) fnIfAbsent();
-  else this._courses.splice(index, 1);
+removeCourse(
+    aCourse,
+    fnIfAbsent = () => {
+        throw new RangeError()
+    }
+) {
+    const index = this._courses.indexOf(aCourse)
+    if (index === -1) fnIfAbsent()
+    else this._courses.splice(index, 1)
 }
 ```
 
@@ -542,7 +566,7 @@ removeCourse(aCourse, fnIfAbsent = () => {throw new RangeError();}) {
 
 ```js
 for (const name of readBasicCourseNames(filename)) {
-  aPerson.addCourse(new Course(name, false));
+    aPerson.addCourse(new Course(name, false))
 }
 ```
 
@@ -571,9 +595,9 @@ get courses() {return this._courses.slice();}
 曾用名：以类取代类型码（Replace Type Code with Class）
 
 ```js
-orders.filter(o => "high" === o.priority || "rush" === o.priority);
+orders.filter((o) => "high" === o.priority || "rush" === o.priority)
 
-orders.filter(o => o.priority.higherThan(new Priority("normal")))
+orders.filter((o) => o.priority.higherThan(new Priority("normal")))
 ```
 
 ### 动机
@@ -608,8 +632,8 @@ orders.filter(o => o.priority.higherThan(new Priority("normal")))
 
 ```js
 constructor(data) {
-  this.priority = data.priority;
-  // more initialization
+    this.priority = data.priority
+    // more initialization
 }
 ```
 
@@ -618,9 +642,7 @@ constructor(data) {
 #### 客户端...
 
 ```js
-highPriorityCount = orders.filter(o => "high" === o.priority
-                                  || "rush" === o.priority)
-                        .length;
+highPriorityCount = orders.filter((o) => "high" === o.priority || "rush" === o.priority).length
 ```
 
 无论何时，当我与一个数据值打交道时，第一件事一定是对它使用封装变量（132）。
@@ -640,12 +662,12 @@ set priority(aString) {this._priority = aString;}
 
 ```js
 class Priority {
-  constructor(value) {
-    this._value = value;
-  }
-  toString() {
-    return this._value;
-  }
+    constructor(value) {
+        this._value = value
+    }
+    toString() {
+        return this._value
+    }
 }
 ```
 
@@ -672,9 +694,7 @@ set priority(aString) {this._priority = new Priority(aString);}
 #### 客户端...
 
 ```js
-highPriorityCount = orders.filter(o => "high" === o.priorityString
-                                  || "rush" === o.priorityString)
-                        .length;
+highPriorityCount = orders.filter((o) => "high" === o.priorityString || "rush" === o.priorityString).length
 ```
 
 这里设值函数的名字倒没有使我不满，因为函数的参数能够清晰地表达其意图。
@@ -692,9 +712,7 @@ set priority(aString) {this._priority = new Priority(aString);}
 #### 客户端...
 
 ```js
-highPriorityCount = orders.filter(o => "high" === o.priority.toString()
-                                  || "rush" === o.priority.toString())
-                        .length;
+highPriorityCount = orders.filter((o) => "high" === o.priority.toString() || "rush" === o.priority.toString()).length
 ```
 
 随着 Priority 对象在别处也有了用处，我开始支持让 Order 类的客户端拿着 Priority 实例来调用设值函数，这可以通过调整 Priority 类的构造函数实现。
@@ -703,8 +721,8 @@ highPriorityCount = orders.filter(o => "high" === o.priority.toString()
 
 ```js
 constructor(value) {
-  if (value instanceof Priority) return value;
-  this._value = value;
+    if (value instanceof Priority) return value
+    this._value = value
 }
 ```
 
@@ -714,19 +732,29 @@ constructor(value) {
 
 ```js
 constructor(value) {
-  if (value instanceof Priority) return value;
-  if (Priority.legalValues().includes(value))
-    this._value = value;
-  else
-    throw new Error(`<${value}> is invalid for Priority`);
+    if (value instanceof Priority) return value
+    if (Priority.legalValues().includes(value)) this._value = value
+    else throw new Error(`<${value}> is invalid for Priority`)
 }
-toString() {return this._value;}
-get _index() {return Priority.legalValues().findIndex(s => s === this._value);}
-static legalValues() {return ['low', 'normal', 'high', 'rush'];}
+toString() {
+    return this._value
+}
+get _index() {
+    return Priority.legalValues().findIndex((s) => s === this._value)
+}
+static legalValues() {
+    return ["low", "normal", "high", "rush"]
+}
 
-equals(other) {return this._index === other._index;}
-higherThan(other) {return this._index > other._index;}
-lowerThan(other) {return this._index < other._index;}
+equals(other) {
+    return this._index === other._index
+}
+higherThan(other) {
+    return this._index > other._index
+}
+lowerThan(other) {
+    return this._index < other._index
+}
 ```
 
 修改的过程中，我发觉它实际上已经担负起值对象（value object）的角色，因此我又为它添加了一个 equals 方法，并确保它的值不可修改。
@@ -736,8 +764,7 @@ lowerThan(other) {return this._index < other._index;}
 #### 客户端...
 
 ```js
-highPriorityCount = orders.filter(o => o.priority.higherThan(new Priority("normal")))
-                        .length;
+highPriorityCount = orders.filter((o) => o.priority.higherThan(new Priority("normal"))).length
 ```
 
 ## 7.4 以查询取代临时变量（Replace Temp with Query）
@@ -745,9 +772,9 @@ highPriorityCount = orders.filter(o => o.priority.higherThan(new Priority("norma
 ```js
 const basePrice = this._quantity * this._itemPrice;
 if (basePrice > 1000)
-  return basePrice * 0.95;
+    return basePrice * 0.95;
 else
-  return basePrice * 0.98;
+    return basePrice * 0.98;
 
 
 get basePrice() {this._quantity * this._itemPrice;}
@@ -755,9 +782,9 @@ get basePrice() {this._quantity * this._itemPrice;}
 ...
 
 if (this.basePrice > 1000)
-  return this.basePrice * 0.95;
+    return this.basePrice * 0.95;
 else
-  return this.basePrice * 0.98;
+    return this.basePrice * 0.98;
 ```
 
 ### 动机
@@ -798,17 +825,17 @@ else
 
 ```js
 class Order {
-  constructor(quantity, item) {
-    this._quantity = quantity;
-    this._item = item;
-  }
+    constructor(quantity, item) {
+        this._quantity = quantity
+        this._item = item
+    }
 
-  get price() {
-    var basePrice = this._quantity * this._item.price;
-    var discountFactor = 0.98;
-    if (basePrice > 1000) discountFactor -= 0.03;
-    return basePrice * discountFactor;
-  }
+    get price() {
+        var basePrice = this._quantity * this._item.price
+        var discountFactor = 0.98
+        if (basePrice > 1000) discountFactor -= 0.03
+        return basePrice * discountFactor
+    }
 }
 ```
 
@@ -820,17 +847,17 @@ class Order {
 
 ```js
 class Order {
-  constructor(quantity, item) {
-    this._quantity = quantity;
-    this._item = item;
-  }
+    constructor(quantity, item) {
+        this._quantity = quantity
+        this._item = item
+    }
 
-  get price() {
-    const basePrice = this._quantity * this._item.price;
-    var discountFactor = 0.98;
-    if (basePrice > 1000) discountFactor -= 0.03;
-    return basePrice * discountFactor;
-  }
+    get price() {
+        const basePrice = this._quantity * this._item.price
+        var discountFactor = 0.98
+        if (basePrice > 1000) discountFactor -= 0.03
+        return basePrice * discountFactor
+    }
 }
 ```
 
@@ -840,14 +867,14 @@ class Order {
 
 ```js
 get price() {
-  const basePrice = this.basePrice;
-  var discountFactor = 0.98;
-  if (basePrice > 1000) discountFactor -= 0.03;
-  return basePrice * discountFactor;
+    const basePrice = this.basePrice
+    var discountFactor = 0.98
+    if (basePrice > 1000) discountFactor -= 0.03
+    return basePrice * discountFactor
 }
 
 get basePrice() {
-  return this._quantity * this._item.price;
+    return this._quantity * this._item.price
 }
 ```
 
@@ -857,10 +884,10 @@ get basePrice() {
 
 ```js
 get price() {
-  const basePrice = this.basePrice;
-  var discountFactor = 0.98;
-  if (this.basePrice > 1000) discountFactor -= 0.03;
-  return this.basePrice * discountFactor;
+    const basePrice = this.basePrice
+    var discountFactor = 0.98
+    if (this.basePrice > 1000) discountFactor -= 0.03
+    return this.basePrice * discountFactor
 }
 ```
 
@@ -870,14 +897,14 @@ get price() {
 
 ```js
 get price() {
-  const discountFactor = this.discountFactor;
-  return this.basePrice * discountFactor;
+    const discountFactor = this.discountFactor
+    return this.basePrice * discountFactor
 }
 
 get discountFactor() {
-  var discountFactor = 0.98;
-  if (this.basePrice > 1000) discountFactor -= 0.03;
-  return discountFactor;
+    var discountFactor = 0.98
+    if (this.basePrice > 1000) discountFactor -= 0.03
+    return discountFactor
 }
 ```
 
@@ -887,7 +914,7 @@ get discountFactor() {
 
 ```js
 get price() {
-  return this.basePrice * this.discountFactor;
+    return this.basePrice * this.discountFactor
 }
 ```
 
@@ -897,16 +924,28 @@ get price() {
 
 ```js
 class Person {
-  get officeAreaCode() {return this._officeAreaCode;}
-  get officeNumber()   {return this._officeNumber;}
+    get officeAreaCode() {
+        return this._officeAreaCode
+    }
+    get officeNumber() {
+        return this._officeNumber
+    }
 }
 class Person {
-  get officeAreaCode() {return this._telephoneNumber.areaCode;}
-  get officeNumber()   {return this._telephoneNumber.number;}
+    get officeAreaCode() {
+        return this._telephoneNumber.areaCode
+    }
+    get officeNumber() {
+        return this._telephoneNumber.number
+    }
 }
 class TelephoneNumber {
-  get areaCode() {return this._areaCode;}
-  get number()   {return this._number;}
+    get areaCode() {
+        return this._areaCode
+    }
+    get number() {
+        return this._number
+    }
 }
 ```
 
@@ -943,13 +982,27 @@ class TelephoneNumber {
 #### class Person...
 
 ```js
-get name()   {return this._name;}
-set name(arg) {this._name = arg;}
-get telephoneNumber() {return `(${this.officeAreaCode}) ${this.officeNumber}`;}
-get officeAreaCode()   {return this._officeAreaCode;}
-set officeAreaCode(arg) {this._officeAreaCode = arg;}
-get officeNumber() {return this._officeNumber;}
-set officeNumber(arg) {this._officeNumber = arg;}
+get name() {
+    return this._name
+}
+set name(arg) {
+    this._name = arg
+}
+get telephoneNumber() {
+    return `(${this.officeAreaCode}) ${this.officeNumber}`
+}
+get officeAreaCode() {
+    return this._officeAreaCode
+}
+set officeAreaCode(arg) {
+    this._officeAreaCode = arg
+}
+get officeNumber() {
+    return this._officeNumber
+}
+set officeNumber(arg) {
+    this._officeNumber = arg
+}
 ```
 
 这里，我可以将与电话号码相关的行为分离到一个独立的类中。首先，我要定义一个空的 TelephoneNumber 类来表示“电话号码”这个概念：
@@ -964,15 +1017,19 @@ class TelephoneNumber {}
 
 ```js
 constructor() {
-  this._telephoneNumber = new TelephoneNumber();
+    this._telephoneNumber = new TelephoneNumber()
 }
 ```
 
 #### class TelephoneNumber...
 
 ```js
-get officeAreaCode()    {return this._officeAreaCode;}
-set officeAreaCode(arg) {this._officeAreaCode = arg;}
+get officeAreaCode() {
+    return this._officeAreaCode
+}
+set officeAreaCode(arg) {
+    this._officeAreaCode = arg
+}
 ```
 
 现在，我运用搬移字段（207）搬移一个字段。
@@ -980,8 +1037,12 @@ set officeAreaCode(arg) {this._officeAreaCode = arg;}
 #### class Person...
 
 ```js
-get officeAreaCode()    {return this._telephoneNumber.officeAreaCode;}
-set officeAreaCode(arg) {this._telephoneNumber.officeAreaCode = arg;}
+get officeAreaCode() {
+    return this._telephoneNumber.officeAreaCode
+}
+set officeAreaCode(arg) {
+    this._telephoneNumber.officeAreaCode = arg
+}
 ```
 
 再次运行测试，然后我对下一个字段进行同样处理。
@@ -989,15 +1050,23 @@ set officeAreaCode(arg) {this._telephoneNumber.officeAreaCode = arg;}
 #### class TelephoneNumber...
 
 ```js
-get officeNumber() {return this._officeNumber;}
-set officeNumber(arg) {this._officeNumber = arg;}
+get officeNumber() {
+    return this._officeNumber
+}
+set officeNumber(arg) {
+    this._officeNumber = arg
+}
 ```
 
 #### class Person...
 
 ```js
-get officeNumber() {return this._telephoneNumber.officeNumber;}
-set officeNumber(arg) {this._telephoneNumber.officeNumber = arg;}
+get officeNumber() {
+    return this._telephoneNumber.officeNumber
+}
+set officeNumber(arg) {
+    this._telephoneNumber.officeNumber = arg
+}
 ```
 
 再次测试，然后再搬移对电话号码的取值函数。
@@ -1005,13 +1074,17 @@ set officeNumber(arg) {this._telephoneNumber.officeNumber = arg;}
 #### class TelephoneNumber...
 
 ```js
-get telephoneNumber() {return `(${this.officeAreaCode}) ${this.officeNumber}`;}
+get telephoneNumber() {
+    return `(${this.officeAreaCode}) ${this.officeNumber}`
+}
 ```
 
 #### class Person...
 
 ```js
-get telephoneNumber() {return this._telephoneNumber.telephoneNumber;}
+get telephoneNumber() {
+    return this._telephoneNumber.telephoneNumber
+}
 ```
 
 现在我需要做些清理工作。“电话号码”显然不该拥有“办公室”（office）的概念，因此我得重命名一下变量。
@@ -1019,20 +1092,36 @@ get telephoneNumber() {return this._telephoneNumber.telephoneNumber;}
 #### class TelephoneNumber...
 
 ```js
-get areaCode()    {return this._areaCode;}
-set areaCode(arg) {this._areaCode = arg;}
+get areaCode() {
+    return this._areaCode
+}
+set areaCode(arg) {
+    this._areaCode = arg
+}
 
-get number()    {return this._number;}
-set number(arg) {this._number = arg;}
+get number() {
+    return this._number
+}
+set number(arg) {
+    this._number = arg
+}
 ```
 
 #### class Person...
 
 ```js
-get officeAreaCode()    {return this._telephoneNumber.areaCode;}
-set officeAreaCode(arg) {this._telephoneNumber.areaCode = arg;}
-get officeNumber()    {return this._telephoneNumber.number;}
-set officeNumber(arg) {this._telephoneNumber.number = arg;}
+get officeAreaCode() {
+    return this._telephoneNumber.areaCode
+}
+set officeAreaCode(arg) {
+    this._telephoneNumber.areaCode = arg
+}
+get officeNumber() {
+    return this._telephoneNumber.number
+}
+set officeNumber(arg) {
+    this._telephoneNumber.number = arg
+}
 ```
 
 TelephoneNumber 类上有一个对自己（telephone number）的取值函数也没什么道理，因此我又对它应用函数改名（124）。
@@ -1040,13 +1129,17 @@ TelephoneNumber 类上有一个对自己（telephone number）的取值函数也
 #### class TelephoneNumber...
 
 ```js
-toString() {return `(${this.areaCode}) ${this.number}`;}
+toString() {
+    return `(${this.areaCode}) ${this.number}`
+}
 ```
 
 #### class Person...
 
 ```js
-get telephoneNumber() {return this._telephoneNumber.toString();}
+get telephoneNumber() {
+    return this._telephoneNumber.toString()
+}
 ```
 
 “电话号码”对象一般还具有复用价值，因此我考虑将新提炼的类暴露给更多的客户端。需要访问 TelephoneNumber 对象时，只须把 Person 类中那些 office 开头的访问函数搬移过来并略作修改即可。但这样 TelephoneNumber 就更像一个值对象（Value Object）[mf-vo]了，因此我会先对它使用将引用对象改为值对象（252）（那个重构手法所用的范例，正是基于本章电话号码例子的延续）。
@@ -1057,18 +1150,29 @@ get telephoneNumber() {return this._telephoneNumber.toString();}
 
 ```js
 class Person {
-  get officeAreaCode() {return this._telephoneNumber.areaCode;}
-  get officeNumber()  {return this._telephoneNumber.number;}
+    get officeAreaCode() {
+        return this._telephoneNumber.areaCode
+    }
+    get officeNumber() {
+        return this._telephoneNumber.number
+    }
 }
 class TelephoneNumber {
-  get areaCode() {return this._areaCode;}
-  get number() {return this._number;}
+    get areaCode() {
+        return this._areaCode
+    }
+    get number() {
+        return this._number
+    }
 }
 
-
 class Person {
-  get officeAreaCode() {return this._officeAreaCode;}
-  get officeNumber()  {return this._officeNumber;}
+    get officeAreaCode() {
+        return this._officeAreaCode
+    }
+    get officeNumber() {
+        return this._officeNumber
+    }
 }
 ```
 
@@ -1094,21 +1198,21 @@ class Person {
 
 ```js
 class TrackingInformation {
-  get shippingCompany() {
-    return this._shippingCompany;
-  }
-  set shippingCompany(arg) {
-    this._shippingCompany = arg;
-  }
-  get trackingNumber() {
-    return this._trackingNumber;
-  }
-  set trackingNumber(arg) {
-    this._trackingNumber = arg;
-  }
-  get display() {
-    return `${this.shippingCompany}: ${this.trackingNumber}`;
-  }
+    get shippingCompany() {
+        return this._shippingCompany
+    }
+    set shippingCompany(arg) {
+        this._shippingCompany = arg
+    }
+    get trackingNumber() {
+        return this._trackingNumber
+    }
+    set trackingNumber(arg) {
+        this._trackingNumber = arg
+    }
+    get display() {
+        return `${this.shippingCompany}: ${this.trackingNumber}`
+    }
 }
 ```
 
@@ -1118,11 +1222,13 @@ class TrackingInformation {
 
 ```js
 get trackingInfo() {
-  return this._trackingInformation.display;
+    return this._trackingInformation.display
 }
-get trackingInformation() {return this._trackingInformation;}
+get trackingInformation() {
+    return this._trackingInformation
+}
 set trackingInformation(aTrackingInformation) {
-  this._trackingInformation = aTrackingInformation;
+    this._trackingInformation = aTrackingInformation
 }
 ```
 
@@ -1133,7 +1239,7 @@ TrackingInformation 类过去可能有很多光荣职责，但现在我觉得它
 #### 调用方...
 
 ```js
-aShipment.trackingInformation.shippingCompany = request.vendor;
+aShipment.trackingInformation.shippingCompany = request.vendor
 ```
 
 我将开始将源类的类似函数全都搬移到 Shipment 里去，但我的做法与做搬移函数（198）时略微有些不同。这里，我先在 Shipment 类里创建一个委托方法，并调整客户端代码，使其调用这个委托方法。
@@ -1141,13 +1247,15 @@ aShipment.trackingInformation.shippingCompany = request.vendor;
 #### class Shipment...
 
 ```js
-set shippingCompany(arg) {this._trackingInformation.shippingCompany = arg;}
+set shippingCompany(arg) {
+    this._trackingInformation.shippingCompany = arg
+}
 ```
 
 #### 调用方...
 
 ```js
-aShipment.trackingInformation.shippingCompany = request.vendor;
+aShipment.trackingInformation.shippingCompany = request.vendor
 ```
 
 对于 TrackingInformation 类中所有为客户端调用的方法，我将施以相同的手法。这之后，我就可以将源类中的所有东西都搬移到 Shipment 类中去。
@@ -1158,15 +1266,19 @@ aShipment.trackingInformation.shippingCompany = request.vendor;
 
 ```js
 get trackingInfo() {
-  return `${this.shippingCompany}: ${this.trackingNumber}`;
+    return `${this.shippingCompany}: ${this.trackingNumber}`
 }
 ```
 
 再继续搬移“收货公司”（shipping company）字段。
 
 ```js
-get shippingCompany() {return this._trackingInformation._shippingCompany;}
-set shippingCompany(arg) {this._trackingInformation._shippingCompany = arg;}
+get shippingCompany() {
+    return this._trackingInformation._shippingCompany
+}
+set shippingCompany(arg) {
+    this._trackingInformation._shippingCompany = arg
+}
 ```
 
 我并未遵循搬移字段（207）的全部步骤，因为此处我只是改由目标类 Shipment 来引用 shippingCompany，那些从源类搬移引用至目标类的步骤在此并不需要。
@@ -1177,12 +1289,20 @@ set shippingCompany(arg) {this._trackingInformation._shippingCompany = arg;}
 
 ```js
 get trackingInfo() {
-  return `${this.shippingCompany}: ${this.trackingNumber}`;
+    return `${this.shippingCompany}: ${this.trackingNumber}`
 }
-get shippingCompany()    {return this._shippingCompany;}
-set shippingCompany(arg) {this._shippingCompany = arg;}
-get trackingNumber()    {return this._trackingNumber;}
-set trackingNumber(arg) {this._trackingNumber = arg;}
+get shippingCompany() {
+    return this._shippingCompany
+}
+set shippingCompany(arg) {
+    this._shippingCompany = arg
+}
+get trackingNumber() {
+    return this._trackingNumber
+}
+set trackingNumber(arg) {
+    this._trackingNumber = arg
+}
 ```
 
 ## 7.7 隐藏委托关系（Hide Delegate）
@@ -1190,13 +1310,14 @@ set trackingNumber(arg) {this._trackingNumber = arg;}
 反向重构：移除中间人（192）
 
 ```js
-manager = aPerson.department.manager;
+manager = aPerson.department.manager
 
-
-manager = aPerson.manager;
+manager = aPerson.manager
 
 class Person {
-  get manager() {return this.department.manager;}
+    get manager() {
+        return this.department.manager
+    }
 }
 ```
 
@@ -1226,20 +1347,34 @@ class Person {
 
 ```js
 constructor(name) {
-  this._name = name;
+    this._name = name
 }
-get name() {return this._name;}
-get department()    {return this._department;}
-set department(arg) {this._department = arg;}
+get name() {
+    return this._name
+}
+get department() {
+    return this._department
+}
+set department(arg) {
+    this._department = arg
+}
 ```
 
 #### class Department...
 
 ```js
-get chargeCode() {return this._chargeCode;}
-set chargeCode(arg) {this._chargeCode = arg;}
-get manager() {return this._manager;}
-set manager(arg) {this._manager = arg;}
+get chargeCode() {
+    return this._chargeCode
+}
+set chargeCode(arg) {
+    this._chargeCode = arg
+}
+get manager() {
+    return this._manager
+}
+set manager(arg) {
+    this._manager = arg
+}
 ```
 
 有些客户端希望知道某人的经理是谁，为此，它必须先取得 Department 对象。
@@ -1247,7 +1382,7 @@ set manager(arg) {this._manager = arg;}
 #### 客户端代码...
 
 ```js
-manager = aPerson.department.manager;
+manager = aPerson.department.manager
 ```
 
 这样的编码就对客户端揭露了 Department 的工作原理，于是客户知道：Department 负责追踪“经理”这条信息。如果对客户隐藏 Department，可以减少耦合。为了这一目的，我在 Person 中建立一个简单的委托函数。
@@ -1255,7 +1390,9 @@ manager = aPerson.department.manager;
 #### class Person...
 
 ```js
-get manager() {return this._department.manager;}
+get manager() {
+    return this._department.manager
+}
 ```
 
 现在，我得修改 Person 的所有客户端，让它们改用新函数：
@@ -1263,7 +1400,7 @@ get manager() {return this._department.manager;}
 #### 客户端代码...
 
 ```js
-manager = aPerson.department.manager;
+manager = aPerson.department.manager
 ```
 
 只要完成了对 Department 所有函数的修改，并相应修改了 Person 的所有客户端，我就可以移除 Person 中的 department 访问函数了。
@@ -1273,13 +1410,15 @@ manager = aPerson.department.manager;
 反向重构：隐藏委托关系（189）
 
 ```js
-manager = aPerson.manager;
+manager = aPerson.manager
 
 class Person {
-  get manager() {return this.department.manager;}
+    get manager() {
+        return this.department.manager
+    }
 }
 
-manager = aPerson.department.manager;
+manager = aPerson.department.manager
 ```
 
 ### 动机
@@ -1305,19 +1444,23 @@ manager = aPerson.department.manager;
 #### 客户端代码...
 
 ```js
-manager = aPerson.manager;
+manager = aPerson.manager
 ```
 
 #### class Person...
 
 ```js
-get manager() {return this._department.manager;}
+get manager() {
+    return this._department.manager
+}
 ```
 
 #### class Department...
 
 ```js
-get manager() {return this._manager;}
+get manager() {
+    return this._manager
+}
 ```
 
 像这样，使用和封装 Department 都很简单。但如果大量函数都这么做，我就不得不在 Person 之中安置大量委托行为。这就该是移除中间人的时候了。首先在 Person 中建立一个函数，用于获取受托对象。
@@ -1325,7 +1468,9 @@ get manager() {return this._manager;}
 #### class Person...
 
 ```js
-get department() {return this._department;}
+get department() {
+    return this._department
+}
 ```
 
 然后逐一处理每个客户端，使它们直接通过受托对象完成工作。
@@ -1333,7 +1478,7 @@ get department() {return this._department;}
 #### 客户端代码...
 
 ```js
-manager = aPerson.department.manager;
+manager = aPerson.department.manager
 ```
 
 完成对客户端引用点的替换后，我就可以从 Person 中移除 manager 方法了。我可以重复此法，移除 Person 中其他类似的简单委托函数。
@@ -1345,7 +1490,9 @@ manager = aPerson.department.manager;
 #### class Person...
 
 ```js
-get manager() {return this.department.manager;}
+get manager() {
+    return this.department.manager
+}
 ```
 
 在 JavaScript 中，调用取值函数的语法跟取用普通字段看起来很像，但通过移除 department 字段的下划线，我想表达出这里是调用了取值函数而非直接取用字段的区别。
@@ -1356,24 +1503,23 @@ get manager() {return this.department.manager;}
 
 ```js
 function foundPerson(people) {
-  for(let i = 0; i < people.length; i++) {
-    if (people[i] === "Don") {
-      return "Don";
+    for (let i = 0; i < people.length; i++) {
+        if (people[i] === "Don") {
+            return "Don"
+        }
+        if (people[i] === "John") {
+            return "John"
+        }
+        if (people[i] === "Kent") {
+            return "Kent"
+        }
     }
-    if (people[i] === "John") {
-      return "John";
-    }
-    if (people[i] === "Kent") {
-      return "Kent";
-    }
-  }
-  return "";
+    return ""
 }
 
-
 function foundPerson(people) {
-  const candidates = ["Don", "John", "Kent"];
-  return people.find(p => candidates.includes(p)) || '';
+    const candidates = ["Don", "John", "Kent"]
+    return people.find((p) => candidates.includes(p)) || ""
 }
 ```
 
@@ -1387,8 +1533,8 @@ function foundPerson(people) {
 
 ### 做法
 
-- 整理一下待替换的算法，保证它已经被抽取到一个独立的函数中。
-- 先只为这个函数准备测试，以便固定它的行为。
-- 准备好另一个（替换用）算法。
-- 执行静态检查。
-- 运行测试，比对新旧算法的运行结果。如果测试通过，那就大功告成；否则，在后续测试和调试过程中，以旧算法为比较参照标准。
+-   整理一下待替换的算法，保证它已经被抽取到一个独立的函数中。
+-   先只为这个函数准备测试，以便固定它的行为。
+-   准备好另一个（替换用）算法。
+-   执行静态检查。
+-   运行测试，比对新旧算法的运行结果。如果测试通过，那就大功告成；否则，在后续测试和调试过程中，以旧算法为比较参照标准。

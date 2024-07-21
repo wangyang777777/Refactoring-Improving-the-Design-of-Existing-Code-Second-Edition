@@ -18,23 +18,23 @@
 
 ```js
 function printOwing(invoice) {
-  printBanner();
-  let outstanding = calculateOutstanding();
+    printBanner()
+    let outstanding = calculateOutstanding()
 
-  //print details
-  console.log(`name: ${invoice.customer}`);
-  console.log(`amount: ${outstanding}`);
+    //print details
+    console.log(`name: ${invoice.customer}`)
+    console.log(`amount: ${outstanding}`)
 }
 
 function printOwing(invoice) {
-  printBanner();
-  let outstanding = calculateOutstanding();
-  printDetails(outstanding);
+    printBanner()
+    let outstanding = calculateOutstanding()
+    printDetails(outstanding)
 
-  function printDetails(outstanding) {
-    console.log(`name: ${invoice.customer}`);
-    console.log(`amount: ${outstanding}`);
-  }
+    function printDetails(outstanding) {
+        console.log(`name: ${invoice.customer}`)
+        console.log(`amount: ${outstanding}`)
+    }
 }
 ```
 
@@ -54,19 +54,18 @@ function printOwing(invoice) {
 
 ### 做法
 
-- 创造一个新函数，根据这个函数的意图来对它命名（以它“做什么”来命名，而不是以它“怎样做”命名）。
+-   创造一个新函数，根据这个函数的意图来对它命名（以它“做什么”来命名，而不是以它“怎样做”命名）。
 
 > **Tip**  
-如果想要提炼的代码非常简单，例如只是一个函数调用，只要新函数的名称能够以更好的方式昭示代码意图，我还是会提炼它；但如果想不出一个更有意义的名称，这就是一个信号，可能我不应该提炼这块代码。不过，我不一定非得马上想出最好的名字，有时在提炼的过程中好的名字才会出现。有时我会提炼一个函数，尝试使用它，然后发现不太合适，再把它内联回去，这完全没问题。只要在这个过程中学到了东西，我的时间就没有白费。
+> 如果想要提炼的代码非常简单，例如只是一个函数调用，只要新函数的名称能够以更好的方式昭示代码意图，我还是会提炼它；但如果想不出一个更有意义的名称，这就是一个信号，可能我不应该提炼这块代码。不过，我不一定非得马上想出最好的名字，有时在提炼的过程中好的名字才会出现。有时我会提炼一个函数，尝试使用它，然后发现不太合适，再把它内联回去，这完全没问题。只要在这个过程中学到了东西，我的时间就没有白费。
 
 如果编程语言支持嵌套函数，就把新函数嵌套在源函数里，这能减少后面需要处理的超出作用域的变量个数。我可以稍后再使用搬移函数（198）把它从源函数中搬移出去。
 
-
-- 将待提炼的代码从源函数复制到新建的目标函数中。
-- 仔细检查提炼出的代码，看看其中是否引用了作用域限于源函数、在提炼出的新函数中访问不到的变量。若是，以参数的形式将它们传递给新函数。
+-   将待提炼的代码从源函数复制到新建的目标函数中。
+-   仔细检查提炼出的代码，看看其中是否引用了作用域限于源函数、在提炼出的新函数中访问不到的变量。若是，以参数的形式将它们传递给新函数。
 
 > **Tip**  
-如果提炼出的新函数嵌套在源函数内部，就不存在变量作用域的问题了。
+> 如果提炼出的新函数嵌套在源函数内部，就不存在变量作用域的问题了。
 
 这些“作用域限于源函数”的变量通常是局部变量或者源函数的参数。最通用的做法是将它们都作为参数传递给新函数。只要没在提炼部分对这些变量赋值，处理起来就没什么难度。
 
@@ -76,20 +75,17 @@ function printOwing(invoice) {
 
 但有时在提炼部分被赋值的局部变量太多，这时最好是先放弃提炼。这种情况下，我会考虑先使用别的重构手法，例如拆分变量（240）或者以查询取代临时变量（178），来简化变量的使用情况，然后再考虑提炼函数。
 
-
-- 所有变量都处理完之后，编译。
-
-> **Tip**  
-如果编程语言支持编译期检查的话，在处理完所有变量之后做一次编译是很有用的，编译器经常会帮你找到没有被恰当处理的变量。
-
-
-- 在源函数中，将被提炼代码段替换为对目标函数的调用。
-- 测试。
-- 查看其他代码是否有与被提炼的代码段相同或相似之处。如果有，考虑使用以函数调用取代内联代码（222）令其调用提炼出的新函数。
+-   所有变量都处理完之后，编译。
 
 > **Tip**  
-有些重构工具直接支持这一步。如果工具不支持，可以快速搜索一下，看看别处是否还有重复代码。
+> 如果编程语言支持编译期检查的话，在处理完所有变量之后做一次编译是很有用的，编译器经常会帮你找到没有被恰当处理的变量。
 
+-   在源函数中，将被提炼代码段替换为对目标函数的调用。
+-   测试。
+-   查看其他代码是否有与被提炼的代码段相同或相似之处。如果有，考虑使用以函数调用取代内联代码（222）令其调用提炼出的新函数。
+
+> **Tip**  
+> 有些重构工具直接支持这一步。如果工具不支持，可以快速搜索一下，看看别处是否还有重复代码。
 
 ### 范例：无局部变量
 
@@ -97,29 +93,25 @@ function printOwing(invoice) {
 
 ```js
 function printOwing(invoice) {
-  let outstanding = 0;
+    let outstanding = 0
 
-  console.log("***********************");
-  console.log("**** Customer Owes ****");
-  console.log("***********************");
+    console.log("***********************")
+    console.log("**** Customer Owes ****")
+    console.log("***********************")
 
-  // calculate outstanding
-  for (const o of invoice.orders) {
-    outstanding += o.amount;
-  }
+    // calculate outstanding
+    for (const o of invoice.orders) {
+        outstanding += o.amount
+    }
 
-  // record due date
-  const today = Clock.today;
-  invoice.dueDate = new Date(
-    today.getFullYear(),
-    today.getMonth(),
-    today.getDate() + 30
-  );
+    // record due date
+    const today = Clock.today
+    invoice.dueDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 30)
 
-  //print details
-  console.log(`name: ${invoice.customer}`);
-  console.log(`amount: ${outstanding}`);
-  console.log(`due: ${invoice.dueDate.toLocaleDateString()}`);
+    //print details
+    console.log(`name: ${invoice.customer}`)
+    console.log(`amount: ${outstanding}`)
+    console.log(`due: ${invoice.dueDate.toLocaleDateString()}`)
 }
 ```
 
@@ -129,32 +121,28 @@ function printOwing(invoice) {
 
 ```js
 function printOwing(invoice) {
-  let outstanding = 0;
+    let outstanding = 0
 
-  printBanner();
+    printBanner()
 
-  // calculate outstanding
-  for (const o of invoice.orders) {
-    outstanding += o.amount;
-  }
+    // calculate outstanding
+    for (const o of invoice.orders) {
+        outstanding += o.amount
+    }
 
-  // record due date
-  const today = Clock.today;
-  invoice.dueDate = new Date(
-    today.getFullYear(),
-    today.getMonth(),
-    today.getDate() + 30
-  );
+    // record due date
+    const today = Clock.today
+    invoice.dueDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 30)
 
-  //print details
-  console.log(`name: ${invoice.customer}`);
-  console.log(`amount: ${outstanding}`);
-  console.log(`due: ${invoice.dueDate.toLocaleDateString()}`);
+    //print details
+    console.log(`name: ${invoice.customer}`)
+    console.log(`amount: ${outstanding}`)
+    console.log(`due: ${invoice.dueDate.toLocaleDateString()}`)
 }
 function printBanner() {
-  console.log("***********************");
-  console.log("**** Customer Owes ****");
-  console.log("***********************");
+    console.log("***********************")
+    console.log("**** Customer Owes ****")
+    console.log("***********************")
 }
 ```
 
@@ -162,25 +150,26 @@ function printBanner() {
 
 ```js
 function printOwing(invoice) {
- let outstanding = 0;
+    let outstanding = 0
 
- printBanner();
+    printBanner()
 
- // calculate outstanding
- for (const o of invoice.orders) {
-  outstanding += o.amount;
- }
+    // calculate outstanding
+    for (const o of invoice.orders) {
+        outstanding += o.amount
+    }
 
- // record due date
- const today = Clock.today;
- invoice.dueDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 30);
+    // record due date
+    const today = Clock.today
+    invoice.dueDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 30)
 
- printDetails();
+    printDetails()
 
- function printDetails() {
-  console.log(`name: ${invoice.customer}`);
-  console.log(`amount: ${outstanding}`);
-  console.log(`due: ${invoice.dueDate.toLocaleDateString()}`);
+    function printDetails() {
+        console.log(`name: ${invoice.customer}`)
+        console.log(`amount: ${outstanding}`)
+        console.log(`due: ${invoice.dueDate.toLocaleDateString()}`)
+    }
 }
 ```
 
@@ -194,52 +183,49 @@ function printOwing(invoice) {
 
 ```js
 function printOwing(invoice) {
- let outstanding = 0;
+    let outstanding = 0
 
- printBanner();
+    printBanner()
 
- // calculate outstanding
- for (const o of invoice.orders) {
-  outstanding += o.amount;
- }
+    // calculate outstanding
+    for (const o of invoice.orders) {
+        outstanding += o.amount
+    }
 
- // record due date
- const today = Clock.today;
- invoice.dueDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 30);
+    // record due date
+    const today = Clock.today
+    invoice.dueDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 30)
 
- //print details
- console.log(`name: ${invoice.customer}`);
- console.log(`amount: ${outstanding}`);
- console.log(`due: ${invoice.dueDate.toLocaleDateString()}`);
+    //print details
+    console.log(`name: ${invoice.customer}`)
+    console.log(`amount: ${outstanding}`)
+    console.log(`due: ${invoice.dueDate.toLocaleDateString()}`)
+}
 ```
 
 就可以将“打印详细信息”这一部分提炼为带两个参数的函数：
 
 ```js
 function printOwing(invoice) {
-  let outstanding = 0;
+    let outstanding = 0
 
-  printBanner();
+    printBanner()
 
-  // calculate outstanding
-  for (const o of invoice.orders) {
-    outstanding += o.amount;
-  }
+    // calculate outstanding
+    for (const o of invoice.orders) {
+        outstanding += o.amount
+    }
 
-  // record due date
-  const today = Clock.today;
-  invoice.dueDate = new Date(
-    today.getFullYear(),
-    today.getMonth(),
-    today.getDate() + 30
-  );
+    // record due date
+    const today = Clock.today
+    invoice.dueDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 30)
 
-  printDetails(invoice, outstanding);
+    printDetails(invoice, outstanding)
 }
 function printDetails(invoice, outstanding) {
-  console.log(`name: ${invoice.customer}`);
-  console.log(`amount: ${outstanding}`);
-  console.log(`due: ${invoice.dueDate.toLocaleDateString()}`);
+    console.log(`name: ${invoice.customer}`)
+    console.log(`amount: ${outstanding}`)
+    console.log(`due: ${invoice.dueDate.toLocaleDateString()}`)
 }
 ```
 
@@ -247,25 +233,21 @@ function printDetails(invoice, outstanding) {
 
 ```js
 function printOwing(invoice) {
-  let outstanding = 0;
+    let outstanding = 0
 
-  printBanner();
+    printBanner()
 
-  // calculate outstanding
-  for (const o of invoice.orders) {
-    outstanding += o.amount;
-  }
+    // calculate outstanding
+    for (const o of invoice.orders) {
+        outstanding += o.amount
+    }
 
-  recordDueDate(invoice);
-  printDetails(invoice, outstanding);
+    recordDueDate(invoice)
+    printDetails(invoice, outstanding)
 }
 function recordDueDate(invoice) {
-  const today = Clock.today;
-  invoice.dueDate = new Date(
-    today.getFullYear(),
-    today.getMonth(),
-    today.getDate() + 30
-  );
+    const today = Clock.today
+    invoice.dueDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 30)
 }
 ```
 
@@ -279,17 +261,17 @@ function recordDueDate(invoice) {
 
 ```js
 function printOwing(invoice) {
-  let outstanding = 0;
+    let outstanding = 0
 
-  printBanner();
+    printBanner()
 
-  // calculate outstanding
-  for (const o of invoice.orders) {
-    outstanding += o.amount;
-  }
+    // calculate outstanding
+    for (const o of invoice.orders) {
+        outstanding += o.amount
+    }
 
-  recordDueDate(invoice);
-  printDetails(invoice, outstanding);
+    recordDueDate(invoice)
+    printDetails(invoice, outstanding)
 }
 ```
 
@@ -299,16 +281,16 @@ function printOwing(invoice) {
 
 ```js
 function printOwing(invoice) {
-  printBanner();
+    printBanner()
 
-  // calculate outstanding
-  let outstanding = 0;
-  for (const o of invoice.orders) {
-    outstanding += o.amount;
-  }
+    // calculate outstanding
+    let outstanding = 0
+    for (const o of invoice.orders) {
+        outstanding += o.amount
+    }
 
-  recordDueDate(invoice);
-  printDetails(invoice, outstanding);
+    recordDueDate(invoice)
+    printDetails(invoice, outstanding)
 }
 ```
 
@@ -316,23 +298,23 @@ function printOwing(invoice) {
 
 ```js
 function printOwing(invoice) {
-  printBanner();
+    printBanner()
 
-  // calculate outstanding
-  let outstanding = 0;
-  for (const o of invoice.orders) {
-    outstanding += o.amount;
-  }
+    // calculate outstanding
+    let outstanding = 0
+    for (const o of invoice.orders) {
+        outstanding += o.amount
+    }
 
-  recordDueDate(invoice);
-  printDetails(invoice, outstanding);
+    recordDueDate(invoice)
+    printDetails(invoice, outstanding)
 }
 function calculateOutstanding(invoice) {
-  let outstanding = 0;
-  for (const o of invoice.orders) {
-    outstanding += o.amount;
-  }
-  return outstanding;
+    let outstanding = 0
+    for (const o of invoice.orders) {
+        outstanding += o.amount
+    }
+    return outstanding
 }
 ```
 
@@ -342,17 +324,17 @@ function calculateOutstanding(invoice) {
 
 ```js
 function printOwing(invoice) {
-  printBanner();
-  let outstanding = calculateOutstanding(invoice);
-  recordDueDate(invoice);
-  printDetails(invoice, outstanding);
+    printBanner()
+    let outstanding = calculateOutstanding(invoice)
+    recordDueDate(invoice)
+    printDetails(invoice, outstanding)
 }
 function calculateOutstanding(invoice) {
-  let outstanding = 0;
-  for (const o of invoice.orders) {
-    outstanding += o.amount;
-  }
-  return outstanding;
+    let outstanding = 0
+    for (const o of invoice.orders) {
+        outstanding += o.amount
+    }
+    return outstanding
 }
 ```
 
@@ -360,17 +342,17 @@ function calculateOutstanding(invoice) {
 
 ```js
 function printOwing(invoice) {
-  printBanner();
-  const outstanding = calculateOutstanding(invoice);
-  recordDueDate(invoice);
-  printDetails(invoice, outstanding);
+    printBanner()
+    const outstanding = calculateOutstanding(invoice)
+    recordDueDate(invoice)
+    printDetails(invoice, outstanding)
 }
 function calculateOutstanding(invoice) {
-  let result = 0;
-  for (const o of invoice.orders) {
-    result += o.amount;
-  }
-  return result;
+    let result = 0
+    for (const o of invoice.orders) {
+        result += o.amount
+    }
+    return result
 }
 ```
 
@@ -392,16 +374,15 @@ function calculateOutstanding(invoice) {
 
 ```js
 function getRating(driver) {
- return moreThanFiveLateDeliveries(driver) ? 2 : 1;
+    return moreThanFiveLateDeliveries(driver) ? 2 : 1
 }
 
 function moreThanFiveLateDeliveries(driver) {
- return driver.numberOfLateDeliveries > 5;
+    return driver.numberOfLateDeliveries > 5
 }
 
-
 function getRating(driver) {
- return (driver.numberOfLateDeliveries > 5) ? 2 : 1;
+    return driver.numberOfLateDeliveries > 5 ? 2 : 1
 }
 ```
 
@@ -415,21 +396,19 @@ function getRating(driver) {
 
 ### 做法
 
-- 检查函数，确定它不具多态性。
+-   检查函数，确定它不具多态性。
 
 > **Tip**  
-如果该函数属于一个类，并且有子类继承了这个函数，那么就无法内联。
+> 如果该函数属于一个类，并且有子类继承了这个函数，那么就无法内联。
 
-
-- 找出这个函数的所有调用点。
-- 将这个函数的所有调用点都替换为函数本体。
-- 每次替换之后，执行测试。
+-   找出这个函数的所有调用点。
+-   将这个函数的所有调用点都替换为函数本体。
+-   每次替换之后，执行测试。
 
 > **Tip**  
-不必一次完成整个内联操作。如果某些调用点比较难以内联，可以等到时机成熟后再来处理。
+> 不必一次完成整个内联操作。如果某些调用点比较难以内联，可以等到时机成熟后再来处理。
 
-
-- 删除该函数的定义。
+-   删除该函数的定义。
 
 被我这样一写，内联函数似乎很简单。但情况往往并非如此。对于递归调用、多返回点、内联至另一个对象中而该对象并无访问函数等复杂情况，我可以写上好几页。我之所以不写这些特殊情况，原因很简单：如果你遇到了这样的复杂情况，就不应该使用这个重构手法。
 
@@ -439,10 +418,10 @@ function getRating(driver) {
 
 ```js
 function rating(aDriver) {
-  return moreThanFiveLateDeliveries(aDriver) ? 2 : 1;
+    return moreThanFiveLateDeliveries(aDriver) ? 2 : 1
 }
 function moreThanFiveLateDeliveries(aDriver) {
-  return aDriver.numberOfLateDeliveries > 5;
+    return aDriver.numberOfLateDeliveries > 5
 }
 ```
 
@@ -450,7 +429,7 @@ function moreThanFiveLateDeliveries(aDriver) {
 
 ```js
 function rating(aDriver) {
-  return aDriver.numberOfLateDeliveries > 5 ? 2 : 1;
+    return aDriver.numberOfLateDeliveries > 5 ? 2 : 1
 }
 ```
 
@@ -458,11 +437,11 @@ function rating(aDriver) {
 
 ```js
 function rating(aDriver) {
-  return moreThanFiveLateDeliveries(aDriver) ? 2 : 1;
+    return moreThanFiveLateDeliveries(aDriver) ? 2 : 1
 }
 
 function moreThanFiveLateDeliveries(dvr) {
-  return dvr.numberOfLateDeliveries > 5;
+    return dvr.numberOfLateDeliveries > 5
 }
 ```
 
@@ -470,7 +449,7 @@ function moreThanFiveLateDeliveries(dvr) {
 
 ```js
 function rating(aDriver) {
-  return aDriver.numberOfLateDeliveries > 5 ? 2 : 1;
+    return aDriver.numberOfLateDeliveries > 5 ? 2 : 1
 }
 ```
 
@@ -478,13 +457,13 @@ function rating(aDriver) {
 
 ```js
 function reportLines(aCustomer) {
-  const lines = [];
-  gatherCustomerData(lines, aCustomer);
-  return lines;
+    const lines = []
+    gatherCustomerData(lines, aCustomer)
+    return lines
 }
 function gatherCustomerData(out, aCustomer) {
-  out.push(["name", aCustomer.name]);
-  out.push(["location", aCustomer.location]);
+    out.push(["name", aCustomer.name])
+    out.push(["location", aCustomer.location])
 }
 ```
 
@@ -492,14 +471,14 @@ function gatherCustomerData(out, aCustomer) {
 
 ```js
 function reportLines(aCustomer) {
-  const lines = [];
-  lines.push(["name", aCustomer.name]);
-  gatherCustomerData(lines, aCustomer);
-  return lines;
+    const lines = []
+    lines.push(["name", aCustomer.name])
+    gatherCustomerData(lines, aCustomer)
+    return lines
 }
 function gatherCustomerData(out, aCustomer) {
-  out.push(["name", aCustomer.name]);
-  out.push(["location", aCustomer.location]);
+    out.push(["name", aCustomer.name])
+    out.push(["location", aCustomer.location])
 }
 ```
 
@@ -507,10 +486,10 @@ function gatherCustomerData(out, aCustomer) {
 
 ```js
 function reportLines(aCustomer) {
-  const lines = [];
-  lines.push(["name", aCustomer.name]);
-  lines.push(["location", aCustomer.location]);
-  return lines;
+    const lines = []
+    lines.push(["name", aCustomer.name])
+    lines.push(["location", aCustomer.location])
+    return lines
 }
 ```
 
@@ -526,16 +505,15 @@ function reportLines(aCustomer) {
 
 ```js
 return (
-  order.quantity * order.itemPrice -
-  Math.max(0, order.quantity - 500) * order.itemPrice * 0.05 +
-  Math.min(order.quantity * order.itemPrice * 0.1, 100)
-);
+    order.quantity * order.itemPrice -
+    Math.max(0, order.quantity - 500) * order.itemPrice * 0.05 +
+    Math.min(order.quantity * order.itemPrice * 0.1, 100)
+)
 
-const basePrice = order.quantity * order.itemPrice;
-const quantityDiscount =
-  Math.max(0, order.quantity - 500) * order.itemPrice * 0.05;
-const shipping = Math.min(basePrice * 0.1, 100);
-return basePrice - quantityDiscount + shipping;
+const basePrice = order.quantity * order.itemPrice
+const quantityDiscount = Math.max(0, order.quantity - 500) * order.itemPrice * 0.05
+const shipping = Math.min(basePrice * 0.1, 100)
+return basePrice - quantityDiscount + shipping
 ```
 
 ### 动机
@@ -550,10 +528,10 @@ return basePrice - quantityDiscount + shipping;
 
 ### 做法
 
-- 确认要提炼的表达式没有副作用。
-- 声明一个不可修改的变量，把你想要提炼的表达式复制一份，以该表达式的结果值给这个变量赋值。
-- 用这个新变量取代原来的表达式。
-- 测试。
+-   确认要提炼的表达式没有副作用。
+-   声明一个不可修改的变量，把你想要提炼的表达式复制一份，以该表达式的结果值给这个变量赋值。
+-   用这个新变量取代原来的表达式。
+-   测试。
 
 如果该表达式出现了多次，请用这个新变量逐一替换，每次替换之后都要执行测试。
 
@@ -563,12 +541,12 @@ return basePrice - quantityDiscount + shipping;
 
 ```js
 function price(order) {
-  //price is base price - quantity discount + shipping
-  return (
-    order.quantity * order.itemPrice -
-    Math.max(0, order.quantity - 500) * order.itemPrice * 0.05 +
-    Math.min(order.quantity * order.itemPrice * 0.1, 100)
-  );
+    //price is base price - quantity discount + shipping
+    return (
+        order.quantity * order.itemPrice -
+        Math.max(0, order.quantity - 500) * order.itemPrice * 0.05 +
+        Math.min(order.quantity * order.itemPrice * 0.1, 100)
+    )
 }
 ```
 
@@ -576,12 +554,12 @@ function price(order) {
 
 ```js
 function price(order) {
-  //price is base price - quantity discount + shipping
-  return (
-    order.quantity * order.itemPrice -
-    Math.max(0, order.quantity - 500) * order.itemPrice * 0.05 +
-    Math.min(order.quantity * order.itemPrice * 0.1, 100)
-  );
+    //price is base price - quantity discount + shipping
+    return (
+        order.quantity * order.itemPrice -
+        Math.max(0, order.quantity - 500) * order.itemPrice * 0.05 +
+        Math.min(order.quantity * order.itemPrice * 0.1, 100)
+    )
 }
 ```
 
@@ -589,13 +567,13 @@ function price(order) {
 
 ```js
 function price(order) {
-  //price is base price - quantity discount + shipping
-  const basePrice = order.quantity * order.itemPrice;
-  return (
-    order.quantity * order.itemPrice -
-    Math.max(0, order.quantity - 500) * order.itemPrice * 0.05 +
-    Math.min(order.quantity * order.itemPrice * 0.1, 100)
-  );
+    //price is base price - quantity discount + shipping
+    const basePrice = order.quantity * order.itemPrice
+    return (
+        order.quantity * order.itemPrice -
+        Math.max(0, order.quantity - 500) * order.itemPrice * 0.05 +
+        Math.min(order.quantity * order.itemPrice * 0.1, 100)
+    )
 }
 ```
 
@@ -603,13 +581,13 @@ function price(order) {
 
 ```js
 function price(order) {
-  //price is base price - quantity discount + shipping
-  const basePrice = order.quantity * order.itemPrice;
-  return (
-    basePrice -
-    Math.max(0, order.quantity - 500) * order.itemPrice * 0.05 +
-    Math.min(order.quantity * order.itemPrice * 0.1, 100)
-  );
+    //price is base price - quantity discount + shipping
+    const basePrice = order.quantity * order.itemPrice
+    return (
+        basePrice -
+        Math.max(0, order.quantity - 500) * order.itemPrice * 0.05 +
+        Math.min(order.quantity * order.itemPrice * 0.1, 100)
+    )
 }
 ```
 
@@ -617,13 +595,9 @@ function price(order) {
 
 ```js
 function price(order) {
-  //price is base price - quantity discount + shipping
-  const basePrice = order.quantity * order.itemPrice;
-  return (
-    basePrice -
-    Math.max(0, order.quantity - 500) * order.itemPrice * 0.05 +
-    Math.min(basePrice * 0.1, 100)
-  );
+    //price is base price - quantity discount + shipping
+    const basePrice = order.quantity * order.itemPrice
+    return basePrice - Math.max(0, order.quantity - 500) * order.itemPrice * 0.05 + Math.min(basePrice * 0.1, 100)
 }
 ```
 
@@ -631,11 +605,10 @@ function price(order) {
 
 ```js
 function price(order) {
-  //price is base price - quantity discount + shipping
-  const basePrice = order.quantity * order.itemPrice;
-  const quantityDiscount =
-    Math.max(0, order.quantity - 500) * order.itemPrice * 0.05;
-  return basePrice - quantityDiscount + Math.min(basePrice * 0.1, 100);
+    //price is base price - quantity discount + shipping
+    const basePrice = order.quantity * order.itemPrice
+    const quantityDiscount = Math.max(0, order.quantity - 500) * order.itemPrice * 0.05
+    return basePrice - quantityDiscount + Math.min(basePrice * 0.1, 100)
 }
 ```
 
@@ -643,11 +616,10 @@ function price(order) {
 
 ```js
 function price(order) {
-  const basePrice = order.quantity * order.itemPrice;
-  const quantityDiscount =
-    Math.max(0, order.quantity - 500) * order.itemPrice * 0.05;
-  const shipping = Math.min(basePrice * 0.1, 100);
-  return basePrice - quantityDiscount + shipping;
+    const basePrice = order.quantity * order.itemPrice
+    const quantityDiscount = Math.max(0, order.quantity - 500) * order.itemPrice * 0.05
+    const shipping = Math.min(basePrice * 0.1, 100)
+    return basePrice - quantityDiscount + shipping
 }
 ```
 
@@ -657,24 +629,24 @@ function price(order) {
 
 ```js
 class Order {
-  constructor(aRecord) {
-    this._data = aRecord;
-  }
+    constructor(aRecord) {
+        this._data = aRecord
+    }
 
-  get quantity() {
-    return this._data.quantity;
-  }
-  get itemPrice() {
-    return this._data.itemPrice;
-  }
+    get quantity() {
+        return this._data.quantity
+    }
+    get itemPrice() {
+        return this._data.itemPrice
+    }
 
-  get price() {
-    return (
-      this.quantity * this.itemPrice -
-      Math.max(0, this.quantity - 500) * this.itemPrice * 0.05 +
-      Math.min(this.quantity * this.itemPrice * 0.1, 100)
-    );
-  }
+    get price() {
+        return (
+            this.quantity * this.itemPrice -
+            Math.max(0, this.quantity - 500) * this.itemPrice * 0.05 +
+            Math.min(this.quantity * this.itemPrice * 0.1, 100)
+        )
+    }
 }
 ```
 
@@ -682,28 +654,28 @@ class Order {
 
 ```js
 class Order {
-  constructor(aRecord) {
-    this._data = aRecord;
-  }
-  get quantity() {
-    return this._data.quantity;
-  }
-  get itemPrice() {
-    return this._data.itemPrice;
-  }
+    constructor(aRecord) {
+        this._data = aRecord
+    }
+    get quantity() {
+        return this._data.quantity
+    }
+    get itemPrice() {
+        return this._data.itemPrice
+    }
 
-  get price() {
-    return this.basePrice - this.quantityDiscount + this.shipping;
-  }
-  get basePrice() {
-    return this.quantity * this.itemPrice;
-  }
-  get quantityDiscount() {
-    return Math.max(0, this.quantity - 500) * this.itemPrice * 0.05;
-  }
-  get shipping() {
-    return Math.min(this.basePrice * 0.1, 100);
-  }
+    get price() {
+        return this.basePrice - this.quantityDiscount + this.shipping
+    }
+    get basePrice() {
+        return this.quantity * this.itemPrice
+    }
+    get quantityDiscount() {
+        return Math.max(0, this.quantity - 500) * this.itemPrice * 0.05
+    }
+    get shipping() {
+        return Math.min(this.basePrice * 0.1, 100)
+    }
 }
 ```
 
@@ -718,12 +690,12 @@ class Order {
 ![](./figures/image00290.jpeg)
 
 ```js
-let basePrice = anOrder.basePrice;
-return (basePrice > 1000);
+let basePrice = anOrder.basePrice
+return basePrice > 1000
 ```
 
 ```js
-return anOrder.basePrice > 1000;
+return anOrder.basePrice > 1000
 ```
 
 ### 动机
@@ -732,18 +704,17 @@ return anOrder.basePrice > 1000;
 
 ### 做法
 
-- 检查确认变量赋值语句的右侧表达式没有副作用。
-- 如果变量没有被声明为不可修改，先将其变为不可修改，并执行测试。
+-   检查确认变量赋值语句的右侧表达式没有副作用。
+-   如果变量没有被声明为不可修改，先将其变为不可修改，并执行测试。
 
 > **Tip**  
-这是为了确保该变量只被赋值一次。
+> 这是为了确保该变量只被赋值一次。
 
-
-- 找到第一处使用该变量的地方，将其替换为直接使用赋值语句的右侧表达式。
-- 测试。
-- 重复前面两步，逐一替换其他所有使用该变量的地方。
-- 删除该变量的声明点和赋值语句。
-- 测试。
+-   找到第一处使用该变量的地方，将其替换为直接使用赋值语句的右侧表达式。
+-   测试。
+-   重复前面两步，逐一替换其他所有使用该变量的地方。
+-   删除该变量的声明点和赋值语句。
+-   测试。
 
 ## 6.5 改变函数声明（Change Function Declaration）
 
@@ -801,18 +772,17 @@ function circumference(radius) {...}
 
 ### 迁移式做法
 
-- 如果有必要的话，先对函数体内部加以重构，使后面的提炼步骤易于开展。
-- 使用提炼函数（106）将函数体提炼成一个新函数。
+-   如果有必要的话，先对函数体内部加以重构，使后面的提炼步骤易于开展。
+-   使用提炼函数（106）将函数体提炼成一个新函数。
 
 > **Tip**  
-如果你打算沿用旧函数的名字，可以先给新函数起一个易于搜索的临时名字。
+> 如果你打算沿用旧函数的名字，可以先给新函数起一个易于搜索的临时名字。
 
-
-- 如果提炼出的函数需要新增参数，用前面的简单做法添加即可。
-- 测试。
-- 对旧函数使用内联函数（115）。
-- 如果新函数使用了临时的名字，再次使用改变函数声明（124）将其改回原来的名字。
-- 测试。
+-   如果提炼出的函数需要新增参数，用前面的简单做法添加即可。
+-   测试。
+-   对旧函数使用内联函数（115）。
+-   如果新函数使用了临时的名字，再次使用改变函数声明（124）将其改回原来的名字。
+-   测试。
 
 如果要重构的函数属于一个具有多态性的类，那么对于该函数的每个实现版本，你都需要通过“提炼出一个新函数”的方式添加一层间接，并把旧函数的调用转发给新函数。如果该函数的多态性是在一个类继承体系中体现，那么只需要在超类上转发即可；如果各个实现类之间并没有一个共同的超类，那么就需要在每个实现类上做转发。
 
@@ -824,7 +794,7 @@ function circumference(radius) {...}
 
 ```js
 function circum(radius) {
-  return 2 * Math.PI * radius;
+    return 2 * Math.PI * radius
 }
 ```
 
@@ -832,7 +802,7 @@ function circum(radius) {
 
 ```js
 function circumference(radius) {
-  return 2 * Math.PI * radius;
+    return 2 * Math.PI * radius
 }
 ```
 
@@ -850,7 +820,7 @@ function circumference(radius) {
 
 ```js
 function circum(radius) {
-  return 2 * Math.PI * radius;
+    return 2 * Math.PI * radius
 }
 ```
 
@@ -858,10 +828,10 @@ function circum(radius) {
 
 ```js
 function circum(radius) {
-  return circumference(radius);
+    return circumference(radius)
 }
 function circumference(radius) {
-  return 2 * Math.PI * radius;
+    return 2 * Math.PI * radius
 }
 ```
 
@@ -876,8 +846,8 @@ function circumference(radius) {
 #### class Book...
 
 ```js
-  addReservation(customer) {
-  this._reservations.push(customer);
+addReservation(customer) {
+    this._reservations.push(customer)
 }
 ```
 
@@ -889,10 +859,10 @@ function circumference(radius) {
 
 ```js
 addReservation(customer) {
-  this.zz_addReservation(customer);
+    this.zz_addReservation(customer)
 }
 zz_addReservation(customer) {
-  this._reservations.push(customer);
+    this._reservations.push(customer)
 }
 ```
 
@@ -902,11 +872,11 @@ zz_addReservation(customer) {
 
 ```js
 addReservation(customer) {
-  this.zz_addReservation(customer, false);
+    this.zz_addReservation(customer, false)
 }
 
 zz_addReservation(customer, isPriority) {
-  this._reservations.push(customer);
+    this._reservations.push(customer)
 }
 ```
 
@@ -916,8 +886,8 @@ zz_addReservation(customer, isPriority) {
 
 ```js
 zz_addReservation(customer, isPriority) {
-  assert(isPriority === true || isPriority === false);
-  this._reservations.push(customer);
+    assert(isPriority === true || isPriority === false)
+    this._reservations.push(customer)
 }
 ```
 
@@ -935,7 +905,7 @@ zz_addReservation(customer, isPriority) {
 
 ```js
 function inNewEngland(aCustomer) {
-  return ["MA", "CT", "ME", "VT", "NH", "RI"].includes(aCustomer.address.state);
+    return ["MA", "CT", "ME", "VT", "NH", "RI"].includes(aCustomer.address.state)
 }
 ```
 
@@ -944,7 +914,7 @@ function inNewEngland(aCustomer) {
 #### 调用方...
 
 ```js
-  const newEnglanders = someCustomers.filter(c => inNewEngland(c));
+const newEnglanders = someCustomers.filter((c) => inNewEngland(c))
 ```
 
 inNewEngland 函数只用到了顾客所在的州（state）这项信息，基于这个信息来判断顾客是否来自新英格兰地区。我希望重构这个函数，使其接受州代码（state code）作为参数，这样就能去掉对“顾客”概念的依赖，使这个函数能在更多的上下文中使用。
@@ -953,8 +923,8 @@ inNewEngland 函数只用到了顾客所在的州（state）这项信息，基�
 
 ```js
 function inNewEngland(aCustomer) {
-  const stateCode = aCustomer.address.state;
-  return ["MA", "CT", "ME", "VT", "NH", "RI"].includes(stateCode);
+    const stateCode = aCustomer.address.state
+    return ["MA", "CT", "ME", "VT", "NH", "RI"].includes(stateCode)
 }
 ```
 
@@ -962,12 +932,12 @@ function inNewEngland(aCustomer) {
 
 ```js
 function inNewEngland(aCustomer) {
-  const stateCode = aCustomer.address.state;
-  return xxNEWinNewEngland(stateCode);
+    const stateCode = aCustomer.address.state
+    return xxNEWinNewEngland(stateCode)
 }
 
 function xxNEWinNewEngland(stateCode) {
-  return ["MA", "CT", "ME", "VT", "NH", "RI"].includes(stateCode);
+    return ["MA", "CT", "ME", "VT", "NH", "RI"].includes(stateCode)
 }
 ```
 
@@ -977,7 +947,7 @@ function xxNEWinNewEngland(stateCode) {
 
 ```js
 function inNewEngland(aCustomer) {
-  return xxNEWinNewEngland(aCustomer.address.state);
+    return xxNEWinNewEngland(aCustomer.address.state)
 }
 ```
 
@@ -986,7 +956,7 @@ function inNewEngland(aCustomer) {
 #### 调用方...
 
 ```js
-  const newEnglanders = someCustomers.filter(c => xxNEWinNewEngland(c.address.state));
+const newEnglanders = someCustomers.filter((c) => xxNEWinNewEngland(c.address.state))
 ```
 
 旧函数被内联到各调用处之后，我就再次使用改变函数声明，把新函数改回旧名字：
@@ -994,14 +964,14 @@ function inNewEngland(aCustomer) {
 #### 调用方...
 
 ```js
-  const newEnglanders = someCustomers.filter(c => inNewEngland(c.address.state));
+const newEnglanders = someCustomers.filter((c) => inNewEngland(c.address.state))
 ```
 
 #### 顶层作用域...
 
 ```js
 function inNewEngland(stateCode) {
-  return ["MA", "CT", "ME", "VT", "NH", "RI"].includes(stateCode);
+    return ["MA", "CT", "ME", "VT", "NH", "RI"].includes(stateCode)
 }
 ```
 
@@ -1016,16 +986,16 @@ function inNewEngland(stateCode) {
 ![](./figures/image00293.jpeg)
 
 ```js
-let defaultOwner = { firstName: "Martin", lastName: "Fowler" };
+let defaultOwner = { firstName: "Martin", lastName: "Fowler" }
 ```
 
 ```js
-let defaultOwnerData = { firstName: "Martin", lastName: "Fowler" };
+let defaultOwnerData = { firstName: "Martin", lastName: "Fowler" }
 export function defaultOwner() {
-  return defaultOwnerData;
+    return defaultOwnerData
 }
 export function setDefaultOwner(arg) {
-  defaultOwnerData = arg;
+    defaultOwnerData = arg
 }
 ```
 
@@ -1045,59 +1015,58 @@ export function setDefaultOwner(arg) {
 
 ### 做法
 
-- 创建封装函数，在其中访问和更新变量值。
-- 执行静态检查。
-- 逐一修改使用该变量的代码，将其改为调用合适的封装函数。每次替换之后，执行测试。
-- 限制变量的可见性。
+-   创建封装函数，在其中访问和更新变量值。
+-   执行静态检查。
+-   逐一修改使用该变量的代码，将其改为调用合适的封装函数。每次替换之后，执行测试。
+-   限制变量的可见性。
 
 > **Tip**  
-有时没办法阻止直接访问变量。若果真如此，可以试试将变量改名，再执行测试，找出仍在直接使用该变量的代码。
+> 有时没办法阻止直接访问变量。若果真如此，可以试试将变量改名，再执行测试，找出仍在直接使用该变量的代码。
 
-
-- 测试。
-- 如果变量的值是一个记录，考虑使用封装记录（162）。
+-   测试。
+-   如果变量的值是一个记录，考虑使用封装记录（162）。
 
 ### 范例
 
 下面这个全局变量中保存了一些有用的数据：
 
 ```js
-let defaultOwner = { firstName: "Martin", lastName: "Fowler" };
+let defaultOwner = { firstName: "Martin", lastName: "Fowler" }
 ```
 
 使用它的代码平淡无奇：
 
 ```js
-spaceship.owner = defaultOwner;
+spaceship.owner = defaultOwner
 ```
 
 更新这段数据的代码是这样：
 
 ```js
-defaultOwner = { firstName: "Rebecca", lastName: "Parsons" };
+defaultOwner = { firstName: "Rebecca", lastName: "Parsons" }
 ```
 
 首先我要定义读取和写入这段数据的函数，给它做个基础的封装。
 
 ```js
 function getDefaultOwner() {
-  return defaultOwner;
+    return defaultOwner
 }
 function setDefaultOwner(arg) {
-  defaultOwner = arg;
+    defaultOwner = arg
 }
 ```
 
 然后就开始处理使用 defaultOwner 的代码。每看见一处引用该数据的代码，就将其改为调用取值函数。
 
 ```js
-spaceship.owner = getDefaultOwner();
+spaceship.owner = getDefaultOwner()
 ```
 
 每看见一处给变量赋值的代码，就将其改为调用设值函数。
 
 ```js
-setDefaultOwner({ firstName: "Rebecca", lastName: "Parsons" });
+setDefaultOwner({ firstName: "Rebecca", lastName: "Parsons" })
 ```
 
 每次替换之后，执行测试。
@@ -1107,12 +1076,12 @@ setDefaultOwner({ firstName: "Rebecca", lastName: "Parsons" });
 #### defaultOwner.js...
 
 ```js
-let defaultOwner = { firstName: "Martin", lastName: "Fowler" };
+let defaultOwner = { firstName: "Martin", lastName: "Fowler" }
 export function getDefaultOwner() {
-  return defaultOwner;
+    return defaultOwner
 }
 export function setDefaultOwner(arg) {
-  defaultOwner = arg;
+    defaultOwner = arg
 }
 ```
 
@@ -1123,12 +1092,12 @@ export function setDefaultOwner(arg) {
 #### defaultOwner.js...
 
 ```js
-let defaultOwnerData = { firstName: "Martin", lastName: "Fowler" };
+let defaultOwnerData = { firstName: "Martin", lastName: "Fowler" }
 export function getdefaultOwner() {
-  return defaultOwnerData;
+    return defaultOwnerData
 }
 export function setDefaultOwner(arg) {
-  defaultOwnerData = arg;
+    defaultOwnerData = arg
 }
 ```
 
@@ -1139,11 +1108,11 @@ JavaScript 有一种惯例：给取值函数和设值函数起同样的名字，
 前面介绍的基本重构手法对数据结构的引用做了封装，使我能控制对该数据结构的访问和重新赋值，但并不能控制对结构内部数据项的修改：
 
 ```js
-const owner1 = defaultOwner();
-assert.equal("Fowler", owner1.lastName, "when set");
-const owner2 = defaultOwner();
-owner2.lastName = "Parsons";
-assert.equal("Parsons", owner1.lastName, "after change owner2"); // is this ok?
+const owner1 = defaultOwner()
+assert.equal("Fowler", owner1.lastName, "when set")
+const owner2 = defaultOwner()
+owner2.lastName = "Parsons"
+assert.equal("Parsons", owner1.lastName, "after change owner2") // is this ok?
 ```
 
 前面的基本重构手法只封装了对最外层数据的引用。很多时候这已经足够了。但也有很多时候，我需要把封装做得更深入，不仅控制对变量引用的修改，还要控制对变量内容的修改。
@@ -1153,30 +1122,39 @@ assert.equal("Parsons", owner1.lastName, "after change owner2"); // is this ok?
 #### defaultOwner.js...
 
 ```js
-let defaultOwnerData = { firstName: "Martin", lastName: "Fowler" };
+let defaultOwnerData = { firstName: "Martin", lastName: "Fowler" }
 export function defaultOwner() {
-  return Object.assign({}, defaultOwnerData);
+    return Object.assign({}, defaultOwnerData)
 }
 export function setDefaultOwner(arg) {
-  defaultOwnerData = arg;
+    defaultOwnerData = arg
 }
 ```
 
 对于列表数据，我尤其常用这一招。如果我在取值函数中返回数据的一份副本，客户端可以随便修改它，但不会影响到共享的这份数据。但在使用副本的做法时，我必须格外小心：有些代码可能希望能修改共享的数据。若果真如此，我就只能依赖测试来发现问题了。另一种做法是阻止对数据的修改，比如通过封装记录（162）就能很好地实现这一效果。
 
 ```js
-  let defaultOwnerData = {firstName: "Martin", lastName: "Fowler"};
-export function defaultOwner()       {return new Person(defaultOwnerData);}
-export function setDefaultOwner(arg) {defaultOwnerData = arg;}
+let defaultOwnerData = { firstName: "Martin", lastName: "Fowler" }
+export function defaultOwner() {
+    return new Person(defaultOwnerData)
+}
+export function setDefaultOwner(arg) {
+    defaultOwnerData = arg
+}
 
 class Person {
- constructor(data) {
-  this._lastName = data.lastName;
-  this._firstName = data.firstName
- }
- get lastName() {return this._lastName;}
- get firstName() {return this._firstName;}
- // and so on for other properties
+    constructor(data) {
+        this._lastName = data.lastName
+        this._firstName = data.firstName
+    }
+    get lastName() {
+        return this._lastName
+    }
+    get firstName() {
+        return this._firstName
+    }
+    // and so on for other properties
+}
 ```
 
 现在，如果客户端调用 defaultOwner 函数获得“默认拥有人”数据、再尝试对其属性（即 lastName 和 firstName）重新赋值，赋值不会产生任何效果。对于侦测或阻止修改数据结构内部的数据项，各种编程语言有不同的方式，所以我会根据当下使用的语言来选择具体的办法。
@@ -1194,11 +1172,11 @@ class Person {
 ![](./figures/image00294.jpeg)
 
 ```js
-let a = height * width;
+let a = height * width
 ```
 
 ```js
-let area = height * width;
+let area = height * width
 ```
 
 ### 动机
@@ -1211,16 +1189,15 @@ let area = height * width;
 
 ### 机制
 
-- 如果变量被广泛使用，考虑运用封装变量（132）将其封装起来。
-- 找出所有使用该变量的代码，逐一修改。
+-   如果变量被广泛使用，考虑运用封装变量（132）将其封装起来。
+-   找出所有使用该变量的代码，逐一修改。
 
 > **Tip**  
-如果在另一个代码库中使用了该变量，这就是一个“已发布变量”（published variable），此时不能进行这个重构。
+> 如果在另一个代码库中使用了该变量，这就是一个“已发布变量”（published variable），此时不能进行这个重构。
 
 如果变量值从不修改，可以将其复制到一个新名字之下，然后逐一修改使用代码，每次修改后执行测试。
 
-
-- 测试。
+-   测试。
 
 ### 范例
 
@@ -1229,68 +1206,67 @@ let area = height * width;
 如果变量的作用域不止于单个函数，问题就会出现。代码库的各处可能有很多地方使用它：
 
 ```js
-let tpHd = "untitled";
+let tpHd = "untitled"
 ```
 
 有些地方是在读取变量值：
 
 ```js
-result += `<h1>${tpHd}</h1>`;
+result += `<h1>${tpHd}</h1>`
 ```
 
 另一些地方则更新它的值：
 
 ```js
-tpHd = obj["articleTitle"];
+tpHd = obj["articleTitle"]
 ```
 
 对于这种情况，我通常的反应是运用封装变量（132）：
 
 ```js
-result += `<h1>${title()}</h1>`;
+result += `<h1>${title()}</h1>`
 
-setTitle(obj["articleTitle"]);
+setTitle(obj["articleTitle"])
 
 function title() {
-  return tpHd;
+    return tpHd
 }
 function setTitle(arg) {
-  tpHd = arg;
+    tpHd = arg
 }
 ```
 
 现在就可以给变量改名：
 
 ```js
-let _title = "untitled";
+let _title = "untitled"
 
 function title() {
-  return _title;
+    return _title
 }
 function setTitle(arg) {
-  _title = arg;
+    _title = arg
 }
 ```
 
 我可以继续重构下去，将包装函数内联回去，这样所有的调用者就变回直接使用变量的状态。不过我很少这样做。如果这个变量被广泛使用，以至于我感到需要先做封装才敢改名，那就有必要保持这个状态，将变量封装在函数后面。
 
 > **Tip**  
-如果我确实想内联，在重构过程中，我就会将取值函数命名为 getTitle，并且其中的变量名也不会以下划线开头。
-
+> 如果我确实想内联，在重构过程中，我就会将取值函数命名为 getTitle，并且其中的变量名也不会以下划线开头。
 
 ### 给常量改名
 
 如果我想改名的是一个常量（或者在客户端看来就像是常量的元素），我可以复制这个常量，这样既不需要封装，又可以逐步完成改名。假如原来的变量声明是这样：
 
 ```js
-const cpyNm = "Acme Gooseberries";
+const cpyNm = "Acme Gooseberries"
 ```
 
 改名的第一步是复制这个常量：
 
 ```js
-const companyName = "Acme Gooseberries";
-const cpyNm = companyName;
+const companyName = "Acme Gooseberries"
+const cpyNm = companyName
 ```
 
 有了这个副本，我就可以逐一修改引用旧常量的代码，使其引用新的常量。全部修改完成后，我会删掉旧的常量。我喜欢先声明新的常量名，然后把新常量复制给旧的名字。这样最后删除旧名字时会稍微容易一点，如果测试失败，再把旧常量放回来也稍微容易一点。
@@ -1323,17 +1299,16 @@ function amountOverdue(aDateRange) {...}
 
 ### 做法
 
-- 如果暂时还没有一个合适的数据结构，就创建一个。
+-   如果暂时还没有一个合适的数据结构，就创建一个。
 
 > **Tip**  
-我倾向于使用类，因为稍后把行为放进来会比较容易。我通常会尽量确保这些新建的数据结构是值对象[mf-vo]。
+> 我倾向于使用类，因为稍后把行为放进来会比较容易。我通常会尽量确保这些新建的数据结构是值对象[mf-vo]。
 
-
-- 测试。
-- 使用改变函数声明（124）给原来的函数新增一个参数，类型是新建的数据结构。
-- 测试。
-- 调整所有调用者，传入新数据结构的适当实例。每修改一处，执行测试。
-- 用新数据结构中的每项元素，逐一取代参数列表中与之对应的参数项，然后删除原来的参数。测试。
+-   测试。
+-   使用改变函数声明（124）给原来的函数新增一个参数，类型是新建的数据结构。
+-   测试。
+-   调整所有调用者，传入新数据结构的适当实例。每修改一处，执行测试。
+-   用新数据结构中的每项元素，逐一取代参数列表中与之对应的参数项，然后删除原来的参数。测试。
 
 ### 范例
 
@@ -1341,23 +1316,22 @@ function amountOverdue(aDateRange) {...}
 
 ```js
 const station = {
-  name: "ZB1",
-  readings: [
-    { temp: 47, time: "2016-11-10 09:10" },
-    { temp: 53, time: "2016-11-10 09:20" },
-    { temp: 58, time: "2016-11-10 09:30" },
-    { temp: 53, time: "2016-11-10 09:40" },
-    { temp: 51, time: "2016-11-10 09:50" },
-  ],
-};
+    name: "ZB1",
+    readings: [
+        { temp: 47, time: "2016-11-10 09:10" },
+        { temp: 53, time: "2016-11-10 09:20" },
+        { temp: 58, time: "2016-11-10 09:30" },
+        { temp: 53, time: "2016-11-10 09:40" },
+        { temp: 51, time: "2016-11-10 09:50" }
+    ]
+}
 ```
 
 下面的函数负责找到超出指定范围的温度读数：
 
 ```js
 function readingsOutsideRange(station, min, max) {
- return station.readings
-  .filter(r => r.temp < min || r.temp > max);
+    return station.readings.filter((r) => r.temp < min || r.temp > max)
 }
 ```
 
@@ -1366,26 +1340,22 @@ function readingsOutsideRange(station, min, max) {
 调用方
 
 ```js
-alerts = readingsOutsideRange(
-  station,
-  operatingPlan.temperatureFloor,
-  operatingPlan.temperatureCeiling
-);
+alerts = readingsOutsideRange(station, operatingPlan.temperatureFloor, operatingPlan.temperatureCeiling)
 ```
 
 请注意，这里的调用代码从另一个对象中抽出两项数据，转手又把这一对数据传递给 readingsOutsideRange。代表“运作计划”的 operatingPlan 对象用了另外的名字来表示温度范围的下限和上限，与 readingsOutsideRange 中所用的名字不同。像这样用两项各不相干的数据来表示一个范围的情况并不少见，最好是将其组合成一个对象。我会首先为要组合的数据声明一个类：
 
 ```js
 class NumberRange {
-  constructor(min, max) {
-    this._data = { min: min, max: max };
-  }
-  get min() {
-    return this._data.min;
-  }
-  get max() {
-    return this._data.max;
-  }
+    constructor(min, max) {
+        this._data = { min: min, max: max }
+    }
+    get min() {
+        return this._data.min
+    }
+    get max() {
+        return this._data.max
+    }
 }
 ```
 
@@ -1395,8 +1365,7 @@ class NumberRange {
 
 ```js
 function readingsOutsideRange(station, min, max, range) {
- return station.readings
-  .filter(r => r.temp < min || r.temp > max);
+    return station.readings.filter((r) => r.temp < min || r.temp > max)
 }
 ```
 
@@ -1405,12 +1374,7 @@ function readingsOutsideRange(station, min, max, range) {
 调用方
 
 ```js
-alerts = readingsOutsideRange(
-  station,
-  operatingPlan.temperatureFloor,
-  operatingPlan.temperatureCeiling,
-  null
-);
+alerts = readingsOutsideRange(station, operatingPlan.temperatureFloor, operatingPlan.temperatureCeiling, null)
 ```
 
 到目前为止，我还没有修改任何行为，所以测试应该仍然能通过。随后，我会挨个找到函数的调用处，传入合适的温度范围。
@@ -1418,16 +1382,8 @@ alerts = readingsOutsideRange(
 调用方
 
 ```js
-const range = new NumberRange(
-  operatingPlan.temperatureFloor,
-  operatingPlan.temperatureCeiling
-);
-alerts = readingsOutsideRange(
-  station,
-  operatingPlan.temperatureFloor,
-  operatingPlan.temperatureCeiling,
-  range
-);
+const range = new NumberRange(operatingPlan.temperatureFloor, operatingPlan.temperatureCeiling)
+alerts = readingsOutsideRange(station, operatingPlan.temperatureFloor, operatingPlan.temperatureCeiling, range)
 ```
 
 此时我还是没有修改任何行为，因为新添的参数没有被使用。所有测试应该仍然能通过。
@@ -1436,58 +1392,44 @@ alerts = readingsOutsideRange(
 
 ```js
 function readingsOutsideRange(station, min, max, range) {
- return station.readings
-  .filter(r => r.temp < min || r.temp > range.max);
+    return station.readings.filter((r) => r.temp < min || r.temp > range.max)
 }
 ```
 
 调用方
 
 ```js
-const range = new NumberRange(
-  operatingPlan.temperatureFloor,
-  operatingPlan.temperatureCeiling
-);
-alerts = readingsOutsideRange(
-  station,
-  operatingPlan.temperatureFloor,
-  operatingPlan.temperatureCeiling,
-  range
-);
+const range = new NumberRange(operatingPlan.temperatureFloor, operatingPlan.temperatureCeiling)
+alerts = readingsOutsideRange(station, operatingPlan.temperatureFloor, operatingPlan.temperatureCeiling, range)
 ```
 
 此时要执行测试。如果测试通过，我再接着处理另一个参数。
 
 ```js
 function readingsOutsideRange(station, min, range) {
- return station.readings
-  .filter(r => r.temp < range.min || r.temp > range.max);
+    return station.readings.filter((r) => r.temp < range.min || r.temp > range.max)
 }
 ```
 
 调用方
 
 ```js
-const range = new NumberRange(
-  operatingPlan.temperatureFloor,
-  operatingPlan.temperatureCeiling
-);
-alerts = readingsOutsideRange(station, operatingPlan.temperatureFloor, range);
+const range = new NumberRange(operatingPlan.temperatureFloor, operatingPlan.temperatureCeiling)
+alerts = readingsOutsideRange(station, operatingPlan.temperatureFloor, range)
 ```
 
 这项重构手法到这儿就完成了。不过，将一堆参数替换成一个真正的对象，这只是长征第一步。创建一个类是为了把行为搬移进去。在这里，我可以给“范围”类添加一个函数，用于测试一个值是否落在范围之内。
 
 ```js
 function readingsOutsideRange(station, range) {
- return station.readings
-  .f ilter(r => !range.contains(r.temp));
+    return station.readings.filter((r) => !range.contains(r.temp))
 }
 ```
 
 #### class NumberRange...
 
 ```js
-  contains(arg) {return (arg >= this.min &amp;&amp; arg <= this.max);}
+contains(arg) {return (arg >= this.min &amp;&amp; arg <= this.max);}
 ```
 
 这样我就迈出了第一步，开始逐渐打造一个真正有用的“范围”[mf-range]类。一旦识别出“范围”这个概念，那么每当我在代码中发现“最大/最小值”这样一对数字时，我就会考虑是否可以将其改为使用“范围”类。（例如，我马上就会考虑把“运作计划”类中的 temperatureFloor 和 temperatureCeiling 替换为 temperatureRange。）在观察这些成对出现的数字如何被使用时，我会发现一些有用的行为，并将其搬移到“范围”类中，简化其使用方法。比如，我可能会先给这个类加上“基于数值判断相等性”的函数，使其成为一个真正的值对象。
@@ -1504,9 +1446,9 @@ function calculateBaseCharge(aReading) {...}
 
 ```js
 class Reading {
-  base() {...}
-  taxableCharge() {...}
-  calculateBaseCharge() {...}
+    base() {...}
+    taxableCharge() {...}
+    calculateBaseCharge() {...}
 }
 ```
 
@@ -1526,26 +1468,24 @@ class Reading {
 
 ### 做法
 
-- 运用封装记录（162）对多个函数共用的数据记录加以封装。
+-   运用封装记录（162）对多个函数共用的数据记录加以封装。
 
 > **Tip**  
-如果多个函数共用的数据还未组织成记录结构，则先运用引入参数对象（140）将其组织成记录。
+> 如果多个函数共用的数据还未组织成记录结构，则先运用引入参数对象（140）将其组织成记录。
 
-
-- 对于使用该记录结构的每个函数，运用搬移函数（198）将其移入新类。
+-   对于使用该记录结构的每个函数，运用搬移函数（198）将其移入新类。
 
 > **Tip**  
-如果函数调用时传入的参数已经是新类的成员，则从参数列表中去除之。
+> 如果函数调用时传入的参数已经是新类的成员，则从参数列表中去除之。
 
-
-- 用以处理该数据记录的逻辑可以用提炼函数（106）提炼出来，并移入新类。
+-   用以处理该数据记录的逻辑可以用提炼函数（106）提炼出来，并移入新类。
 
 ### 范例
 
 我在英格兰长大，那是一个热爱喝茶的国度。（个人而言，我不喜欢在英格兰喝到的大部分茶，对中国茶和日本茶倒是情有独钟。）所以，我虚构了一种用于向老百姓供给茶水的公共设施。每个月会有软件读取茶水计量器的数据，得到类似这样的读数（reading）：
 
 ```js
-reading = { customer: "ivan", quantity: 10, month: 5, year: 2017 };
+reading = { customer: "ivan", quantity: 10, month: 5, year: 2017 }
 ```
 
 浏览处理这些数据记录的代码，我发现有很多地方在做着相似的计算，于是我找到了一处计算“基础费用”（base charge）的逻辑。
@@ -1553,8 +1493,8 @@ reading = { customer: "ivan", quantity: 10, month: 5, year: 2017 };
 #### 客户端 1...
 
 ```js
-const aReading = acquireReading();
-const baseCharge = baseRate(aReading.month, aReading.year) * aReading.quantity;
+const aReading = acquireReading()
+const baseCharge = baseRate(aReading.month, aReading.year) * aReading.quantity
 ```
 
 在英格兰，一切生活必需品都得交税，茶自然也不例外。不过，按照规定，只要不超出某个必要用量，就不用交税。
@@ -1562,9 +1502,9 @@ const baseCharge = baseRate(aReading.month, aReading.year) * aReading.quantity;
 #### 客户端 2...
 
 ```js
-const aReading = acquireReading();
-const base = baseRate(aReading.month, aReading.year) * aReading.quantity;
-const taxableCharge = Math.max(0, base - taxThreshold(aReading.year));
+const aReading = acquireReading()
+const base = baseRate(aReading.month, aReading.year) * aReading.quantity
+const taxableCharge = Math.max(0, base - taxThreshold(aReading.year))
 ```
 
 我相信你也发现了：计算基础费用的公式被重复了两遍。如果你跟我有一样的习惯，现在大概已经在着手提炼函数（106）了。有趣的是，好像别人已经动过这个脑筋了。
@@ -1572,11 +1512,11 @@ const taxableCharge = Math.max(0, base - taxThreshold(aReading.year));
 #### 客户端 3...
 
 ```js
-const aReading = acquireReading();
-const basicChargeAmount = calculateBaseCharge(aReading);
+const aReading = acquireReading()
+const basicChargeAmount = calculateBaseCharge(aReading)
 
 function calculateBaseCharge(aReading) {
-  return baseRate(aReading.month, aReading.year) * aReading.quantity;
+    return baseRate(aReading.month, aReading.year) * aReading.quantity
 }
 ```
 
@@ -1586,24 +1526,24 @@ function calculateBaseCharge(aReading) {
 
 ```js
 class Reading {
-  constructor(data) {
-    this._customer = data.customer;
-    this._quantity = data.quantity;
-    this._month = data.month;
-    this._year = data.year;
-  }
-  get customer() {
-    return this._customer;
-  }
-  get quantity() {
-    return this._quantity;
-  }
-  get month() {
-    return this._month;
-  }
-  get year() {
-    return this._year;
-  }
+    constructor(data) {
+        this._customer = data.customer
+        this._quantity = data.quantity
+        this._month = data.month
+        this._year = data.year
+    }
+    get customer() {
+        return this._customer
+    }
+    get quantity() {
+        return this._quantity
+    }
+    get month() {
+        return this._month
+    }
+    get year() {
+        return this._year
+    }
 }
 ```
 
@@ -1612,9 +1552,9 @@ class Reading {
 #### 客户端 3...
 
 ```js
-const rawReading = acquireReading();
-const aReading = new Reading(rawReading);
-const basicChargeAmount = calculateBaseCharge(aReading);
+const rawReading = acquireReading()
+const aReading = new Reading(rawReading)
+const basicChargeAmount = calculateBaseCharge(aReading)
 ```
 
 然后我用搬移函数（198）把 calculateBaseCharge 搬到新类中。
@@ -1630,9 +1570,9 @@ const basicChargeAmount = calculateBaseCharge(aReading);
 #### 客户端 3...
 
 ```js
-const rawReading = acquireReading();
-const aReading = new Reading(rawReading);
-const basicChargeAmount = aReading.calculateBaseCharge;
+const rawReading = acquireReading()
+const aReading = new Reading(rawReading)
+const basicChargeAmount = aReading.calculateBaseCharge
 ```
 
 搬移的同时，我会顺便运用函数改名（124），按照我喜欢的风格对这个函数改名。
@@ -1646,9 +1586,9 @@ const basicChargeAmount = aReading.calculateBaseCharge;
 #### 客户端 3...
 
 ```js
-const rawReading = acquireReading();
-const aReading = new Reading(rawReading);
-const basicChargeAmount = aReading.baseCharge;
+const rawReading = acquireReading()
+const aReading = new Reading(rawReading)
+const basicChargeAmount = aReading.baseCharge
 ```
 
 用这个名字，Reading 类的客户端将不知道 baseCharge 究竟是一个字段还是推演计算出的值。这是好事，它符合“统一访问原则”（Uniform Access Principle）[mf-ua]。
@@ -1658,9 +1598,9 @@ const basicChargeAmount = aReading.baseCharge;
 #### 客户端 1...
 
 ```js
-const rawReading = acquireReading();
-const aReading = new Reading(rawReading);
-const baseCharge = aReading.baseCharge;
+const rawReading = acquireReading()
+const aReading = new Reading(rawReading)
+const baseCharge = aReading.baseCharge
 ```
 
 很有可能我会顺手用内联变量（123）把 baseCharge 变量给去掉。不过，我们当下介绍的重构手法更关心“计算应税费用”的逻辑。同样，我先将那里的客户端代码改为使用新建的 baseCharge 属性。
@@ -1668,28 +1608,25 @@ const baseCharge = aReading.baseCharge;
 #### 客户端 2...
 
 ```js
-const rawReading = acquireReading();
-const aReading = new Reading(rawReading);
-const taxableCharge = Math.max(
-  0,
-  aReading.baseCharge - taxThreshold(aReading.year)
-);
+const rawReading = acquireReading()
+const aReading = new Reading(rawReading)
+const taxableCharge = Math.max(0, aReading.baseCharge - taxThreshold(aReading.year))
 ```
 
 运用提炼函数（106）将计算应税费用（taxable charge）的逻辑提炼成函数：
 
 ```js
 function taxableChargeFn(aReading) {
-  return Math.max(0, aReading.baseCharge - taxThreshold(aReading.year));
+    return Math.max(0, aReading.baseCharge - taxThreshold(aReading.year))
 }
 ```
 
 #### 客户端 3...
 
 ```js
-const rawReading = acquireReading();
-const aReading = new Reading(rawReading);
-const taxableCharge = taxableChargeFn(aReading);
+const rawReading = acquireReading()
+const aReading = new Reading(rawReading)
+const taxableCharge = taxableChargeFn(aReading)
 ```
 
 然后我运用搬移函数（198）将其移入 Reading 类：
@@ -1698,16 +1635,16 @@ const taxableCharge = taxableChargeFn(aReading);
 
 ```js
 get taxableCharge() {
-  return Math.max(0, this.baseCharge - taxThreshold(this.year));
+    return Math.max(0, this.baseCharge - taxThreshold(this.year));
 }
 ```
 
 #### 客户端 3...
 
 ```js
-const rawReading = acquireReading();
-const aReading = new Reading(rawReading);
-const taxableCharge = aReading.taxableCharge;
+const rawReading = acquireReading()
+const aReading = new Reading(rawReading)
+const taxableCharge = aReading.taxableCharge
 ```
 
 由于所有派生数据都是在使用时计算得出的，所以对存储下来的读数进行修改也没问题。一般而论，我更倾向于使用不可变的数据；但很多时候我们必须得使用可变数据（比如 JavaScript 整个语言生态在设计时就没有考虑数据的不可变性）。如果数据确有可能被更新，那么用类将其封装起来会很有帮助。
@@ -1723,10 +1660,10 @@ function taxableCharge(aReading) {...}
 
 ```js
 function enrichReading(argReading) {
-  const aReading = _.cloneDeep(argReading);
-  aReading.baseCharge = base(aReading);
-  aReading.taxableCharge = taxableCharge(aReading);
-  return aReading;
+    const aReading = _.cloneDeep(argReading)
+    aReading.baseCharge = base(aReading)
+    aReading.taxableCharge = taxableCharge(aReading)
+    return aReading
 }
 ```
 
@@ -1742,27 +1679,25 @@ function enrichReading(argReading) {
 
 ### 做法
 
-- 创建一个变换函数，输入参数是需要变换的记录，并直接返回该记录的值。
+-   创建一个变换函数，输入参数是需要变换的记录，并直接返回该记录的值。
 
 > **Tip**  
-这一步通常需要对输入的记录做深复制（deep copy）。此时应该写个测试，确保变换不会修改原来的记录。
+> 这一步通常需要对输入的记录做深复制（deep copy）。此时应该写个测试，确保变换不会修改原来的记录。
 
-
-- 挑选一块逻辑，将其主体移入变换函数中，把结果作为字段添加到输出记录中。修改客户端代码，令其使用这个新字段。
+-   挑选一块逻辑，将其主体移入变换函数中，把结果作为字段添加到输出记录中。修改客户端代码，令其使用这个新字段。
 
 > **Tip**  
-如果计算逻辑比较复杂，先用提炼函数（106）提炼之。
+> 如果计算逻辑比较复杂，先用提炼函数（106）提炼之。
 
-
-- 测试。
-- 针对其他相关的计算逻辑，重复上述步骤。
+-   测试。
+-   针对其他相关的计算逻辑，重复上述步骤。
 
 ### 范例
 
 在我长大的国度，茶是生活中的重要部分，以至于我想象了这样一种特别的公共设施，专门给老百姓供应茶水。每个月，从这个设备上可以得到读数（reading），从而知道每位顾客取用了多少茶。
 
 ```js
-reading = { customer: "ivan", quantity: 10, month: 5, year: 2017 };
+reading = { customer: "ivan", quantity: 10, month: 5, year: 2017 }
 ```
 
 几个不同地方的代码分别根据茶的用量进行计算。一处是计算应该向顾客收取的基本费用。
@@ -1770,8 +1705,8 @@ reading = { customer: "ivan", quantity: 10, month: 5, year: 2017 };
 #### 客户端 1...
 
 ```js
-const aReading = acquireReading();
-const baseCharge = baseRate(aReading.month, aReading.year) * aReading.quantity;
+const aReading = acquireReading()
+const baseCharge = baseRate(aReading.month, aReading.year) * aReading.quantity
 ```
 
 另一处是计算应该交税的费用—比基本费用要少，因为政府明智地认为，每个市民都有权免税享受一定量的茶水。
@@ -1779,9 +1714,9 @@ const baseCharge = baseRate(aReading.month, aReading.year) * aReading.quantity;
 #### 客户端 2...
 
 ```js
-const aReading = acquireReading();
-const base = baseRate(aReading.month, aReading.year) * aReading.quantity;
-const taxableCharge = Math.max(0, base - taxThreshold(aReading.year));
+const aReading = acquireReading()
+const base = baseRate(aReading.month, aReading.year) * aReading.quantity
+const taxableCharge = Math.max(0, base - taxThreshold(aReading.year))
 ```
 
 浏览处理这些数据记录的代码，我发现有很多地方在做着相似的计算。这样的重复代码，一旦需要修改（我打赌这只是早晚的问题），就会造成麻烦。我可以用提炼函数（106）来处理这些重复的计算逻辑，但这样提炼出来的函数会散落在程序中，以后的程序员还是很难找到。说真的，我还真在另一块代码中找到了一个这样的函数。
@@ -1789,11 +1724,11 @@ const taxableCharge = Math.max(0, base - taxThreshold(aReading.year));
 #### 客户端 3...
 
 ```js
-const aReading = acquireReading();
-const basicChargeAmount = calculateBaseCharge(aReading);
+const aReading = acquireReading()
+const basicChargeAmount = calculateBaseCharge(aReading)
 
 function calculateBaseCharge(aReading) {
-  return baseRate(aReading.month, aReading.year) * aReading.quantity;
+    return baseRate(aReading.month, aReading.year) * aReading.quantity
 }
 ```
 
@@ -1803,8 +1738,8 @@ function calculateBaseCharge(aReading) {
 
 ```js
 function enrichReading(original) {
-  const result = _.cloneDeep(original);
-  return result;
+    const result = _.cloneDeep(original)
+    return result
 }
 ```
 
@@ -1817,18 +1752,18 @@ function enrichReading(original) {
 #### 客户端 3...
 
 ```js
-const rawReading = acquireReading();
-const aReading = enrichReading(rawReading);
-const basicChargeAmount = calculateBaseCharge(aReading);
+const rawReading = acquireReading()
+const aReading = enrichReading(rawReading)
+const basicChargeAmount = calculateBaseCharge(aReading)
 ```
 
 然后我运用搬移函数（198）把 calculateBaseCharge 函数搬移到增强过程中：
 
 ```js
 function enrichReading(original) {
-  const result = _.cloneDeep(original);
-  result.baseCharge = calculateBaseCharge(result);
-  return result;
+    const result = _.cloneDeep(original)
+    result.baseCharge = calculateBaseCharge(result)
+    return result
 }
 ```
 
@@ -1839,9 +1774,9 @@ function enrichReading(original) {
 #### 客户端 3...
 
 ```js
-const rawReading = acquireReading();
-const aReading = enrichReading(rawReading);
-const basicChargeAmount = aReading.baseCharge;
+const rawReading = acquireReading()
+const aReading = enrichReading(rawReading)
+const basicChargeAmount = aReading.baseCharge
 ```
 
 当所有调用 calculateBaseCharge 的地方都修改完成后，就可以把这个函数内嵌到 enrichReading 函数中，从而更清楚地表明态度：如果需要“计算基本费用”的逻辑，请使用增强后的记录。
@@ -1850,11 +1785,11 @@ const basicChargeAmount = aReading.baseCharge;
 
 ```js
 it("check reading unchanged", function () {
-  const baseReading = { customer: "ivan", quantity: 15, month: 5, year: 2017 };
-  const oracle = _.cloneDeep(baseReading);
-  enrichReading(baseReading);
-  assert.deepEqual(baseReading, oracle);
-});
+    const baseReading = { customer: "ivan", quantity: 15, month: 5, year: 2017 }
+    const oracle = _.cloneDeep(baseReading)
+    enrichReading(baseReading)
+    assert.deepEqual(baseReading, oracle)
+})
 ```
 
 现在我可以修改客户端 1 的代码，让它也使用这个新添的字段。
@@ -1862,9 +1797,9 @@ it("check reading unchanged", function () {
 #### 客户端 1...
 
 ```js
-const rawReading = acquireReading();
-const aReading = enrichReading(rawReading);
-const baseCharge = aReading.baseCharge;
+const rawReading = acquireReading()
+const aReading = enrichReading(rawReading)
+const baseCharge = aReading.baseCharge
 ```
 
 此时可以考虑用内联变量（123）去掉 baseCharge 变量。
@@ -1872,52 +1807,46 @@ const baseCharge = aReading.baseCharge;
 现在我转头去看“计算应税费用”的逻辑。第一步是把变换函数用起来：
 
 ```js
-const rawReading = acquireReading();
-const aReading = enrichReading(rawReading);
-const base = baseRate(aReading.month, aReading.year) * aReading.quantity;
-const taxableCharge = Math.max(0, base - taxThreshold(aReading.year));
+const rawReading = acquireReading()
+const aReading = enrichReading(rawReading)
+const base = baseRate(aReading.month, aReading.year) * aReading.quantity
+const taxableCharge = Math.max(0, base - taxThreshold(aReading.year))
 ```
 
 基本费用的计算逻辑马上就可以改用变换得到的新字段代替。如果计算逻辑比较复杂，我可以先运用提炼函数（106）。不过这里的情况足够简单，一步到位修改过来就行。
 
 ```js
-const rawReading = acquireReading();
-const aReading = enrichReading(rawReading);
-const base = aReading.baseCharge;
-const taxableCharge = Math.max(0, base - taxThreshold(aReading.year));
+const rawReading = acquireReading()
+const aReading = enrichReading(rawReading)
+const base = aReading.baseCharge
+const taxableCharge = Math.max(0, base - taxThreshold(aReading.year))
 ```
 
 执行测试之后，我就用内联变量（123）去掉 base 变量：
 
 ```js
-const rawReading = acquireReading();
-const aReading = enrichReading(rawReading);
-const taxableCharge = Math.max(
-  0,
-  aReading.baseCharge - taxThreshold(aReading.year)
-);
+const rawReading = acquireReading()
+const aReading = enrichReading(rawReading)
+const taxableCharge = Math.max(0, aReading.baseCharge - taxThreshold(aReading.year))
 ```
 
 然后把计算逻辑搬移到变换函数中：
 
 ```js
 function enrichReading(original) {
-  const result = _.cloneDeep(original);
-  result.baseCharge = calculateBaseCharge(result);
-  result.taxableCharge = Math.max(
-    0,
-    result.baseCharge - taxThreshold(result.year)
-  );
-  return result;
+    const result = _.cloneDeep(original)
+    result.baseCharge = calculateBaseCharge(result)
+    result.taxableCharge = Math.max(0, result.baseCharge - taxThreshold(result.year))
+    return result
 }
 ```
 
 修改使用方代码，让它使用新添的字段。
 
 ```js
-const rawReading = acquireReading();
-const aReading = enrichReading(rawReading);
-const taxableCharge = aReading.taxableCharge;
+const rawReading = acquireReading()
+const aReading = enrichReading(rawReading)
+const taxableCharge = aReading.taxableCharge
 ```
 
 测试。现在我可以再次用内联变量（123）把 taxableCharge 变量也去掉。
@@ -1929,24 +1858,24 @@ const taxableCharge = aReading.taxableCharge;
 ![](./figures/image00302.jpeg)
 
 ```js
-const orderData = orderString.split(/\s+/);
-const productPrice = priceList[orderData[0].split("-")[1]];
-const orderPrice = parseInt(orderData[1]) * productPrice;
+const orderData = orderString.split(/\s+/)
+const productPrice = priceList[orderData[0].split("-")[1]]
+const orderPrice = parseInt(orderData[1]) * productPrice
 ```
 
 ```js
-const orderRecord = parseOrder(order);
-const orderPrice = price(orderRecord, priceList);
+const orderRecord = parseOrder(order)
+const orderPrice = price(orderRecord, priceList)
 
 function parseOrder(aString) {
-  const values = aString.split(/\s+/);
-  return {
-    productID: values[0].split("-")[1],
-    quantity: parseInt(values[1]),
-  };
+    const values = aString.split(/\s+/)
+    return {
+        productID: values[0].split("-")[1],
+        quantity: parseInt(values[1])
+    }
 }
 function price(order, priceList) {
-  return order.quantity * priceList[order.productID];
+    return order.quantity * priceList[order.productID]
 }
 ```
 
@@ -1962,21 +1891,19 @@ function price(order, priceList) {
 
 ### 做法
 
-- 将第二阶段的代码提炼成独立的函数。
-- 测试。
-- 引入一个中转数据结构，将其作为参数添加到提炼出的新函数的参数列表中。
-- 测试。
-- 逐一检查提炼出的“第二阶段函数”的每个参数。如果某个参数被第一阶段用到，就将其移入中转数据结构。每次搬移之后都要执行测试。
+-   将第二阶段的代码提炼成独立的函数。
+-   测试。
+-   引入一个中转数据结构，将其作为参数添加到提炼出的新函数的参数列表中。
+-   测试。
+-   逐一检查提炼出的“第二阶段函数”的每个参数。如果某个参数被第一阶段用到，就将其移入中转数据结构。每次搬移之后都要执行测试。
 
 > **Tip**  
-有时第二阶段根本不应该使用某个参数。果真如此，就把使用该参数得到的结果全都提炼成中转数据结构的字段，然后用搬移语句到调用者（217）把使用该参数的代码行搬移到“第二阶段函数”之外。
+> 有时第二阶段根本不应该使用某个参数。果真如此，就把使用该参数得到的结果全都提炼成中转数据结构的字段，然后用搬移语句到调用者（217）把使用该参数的代码行搬移到“第二阶段函数”之外。
 
-
-- 对第一阶段的代码运用提炼函数（106），让提炼出的函数返回中转数据结构。
+-   对第一阶段的代码运用提炼函数（106），让提炼出的函数返回中转数据结构。
 
 > **Tip**  
-也可以把第一阶段提炼成一个变换（transform）对象。
-
+> 也可以把第一阶段提炼成一个变换（transform）对象。
 
 ### 范例
 
@@ -1984,14 +1911,13 @@ function price(order, priceList) {
 
 ```js
 function priceOrder(product, quantity, shippingMethod) {
- const basePrice = product.basePrice * quantity;
- const discount = Math.max(quantity - product.discountThreshold, 0)
-     * product.basePrice * product.discountRate;
- const shippingPerCase = (basePrice > shippingMethod.discountThreshold)
-     ? shippingMethod.discountedFee : shippingMethod.feePerCase;
- const shippingCost = quantity * shippingPerCase;
- const price = basePrice - discount + shippingCost;
- return price;
+    const basePrice = product.basePrice * quantity
+    const discount = Math.max(quantity - product.discountThreshold, 0) * product.basePrice * product.discountRate
+    const shippingPerCase =
+        basePrice > shippingMethod.discountThreshold ? shippingMethod.discountedFee : shippingMethod.feePerCase
+    const shippingCost = quantity * shippingPerCase
+    const price = basePrice - discount + shippingCost
+    return price
 }
 ```
 
@@ -2001,18 +1927,17 @@ function priceOrder(product, quantity, shippingMethod) {
 
 ```js
 function priceOrder(product, quantity, shippingMethod) {
- const basePrice = product.basePrice * quantity;
- const discount = Math.max(quantity - product.discountThreshold, 0)
-     * product.basePrice * product.discountRate;
- const price = applyShipping(basePrice, shippingMethod, quantity, discount);
- return price;
+    const basePrice = product.basePrice * quantity
+    const discount = Math.max(quantity - product.discountThreshold, 0) * product.basePrice * product.discountRate
+    const price = applyShipping(basePrice, shippingMethod, quantity, discount)
+    return price
 }
 function applyShipping(basePrice, shippingMethod, quantity, discount) {
- const shippingPerCase = (basePrice > shippingMethod.discountThreshold)
-     ? shippingMethod.discountedFee : shippingMethod.feePerCase;
- const shippingCost = quantity * shippingPerCase;
- const price = basePrice - discount + shippingCost;
- return price;
+    const shippingPerCase =
+        basePrice > shippingMethod.discountThreshold ? shippingMethod.discountedFee : shippingMethod.feePerCase
+    const shippingCost = quantity * shippingPerCase
+    const price = basePrice - discount + shippingCost
+    return price
 }
 ```
 
@@ -2022,20 +1947,19 @@ function applyShipping(basePrice, shippingMethod, quantity, discount) {
 
 ```js
 function priceOrder(product, quantity, shippingMethod) {
- const basePrice = product.basePrice * quantity;
- const discount = Math.max(quantity - product.discountThreshold, 0)
-     * product.basePrice * product.discountRate;
- const priceData = {};
- const price = applyShipping(priceData, basePrice, shippingMethod, quantity, discount);
- return price;
+    const basePrice = product.basePrice * quantity
+    const discount = Math.max(quantity - product.discountThreshold, 0) * product.basePrice * product.discountRate
+    const priceData = {}
+    const price = applyShipping(priceData, basePrice, shippingMethod, quantity, discount)
+    return price
 }
 
 function applyShipping(priceData, basePrice, shippingMethod, quantity, discount) {
- const shippingPerCase = (basePrice > shippingMethod.discountThreshold)
-     ? shippingMethod.discountedFee : shippingMethod.feePerCase;
- const shippingCost = quantity * shippingPerCase;
- const price = basePrice - discount + shippingCost;
- return price;
+    const shippingPerCase =
+        basePrice > shippingMethod.discountThreshold ? shippingMethod.discountedFee : shippingMethod.feePerCase
+    const shippingCost = quantity * shippingPerCase
+    const price = basePrice - discount + shippingCost
+    return price
 }
 ```
 
@@ -2043,19 +1967,20 @@ function applyShipping(priceData, basePrice, shippingMethod, quantity, discount)
 
 ```js
 function priceOrder(product, quantity, shippingMethod) {
- const basePrice = product.basePrice * quantity;
- const discount = Math.max(quantity - product.discountThreshold, 0)
-     * product.basePrice * product.discountRate;
- const priceData = {basePrice: basePrice};
- const price = applyShipping(priceData, basePrice, shippingMethod, quantity, discount);
- return price;
+    const basePrice = product.basePrice * quantity
+    const discount = Math.max(quantity - product.discountThreshold, 0) * product.basePrice * product.discountRate
+    const priceData = { basePrice: basePrice }
+    const price = applyShipping(priceData, basePrice, shippingMethod, quantity, discount)
+    return price
 }
 function applyShipping(priceData, basePrice, shippingMethod, quantity, discount) {
- const shippingPerCase = (priceData.basePrice > shippingMethod.discountThreshold)
-     ? shippingMethod.discountedFee : shippingMethod.feePerCase;
- const shippingCost = quantity * shippingPerCase;
- const price = priceData.basePrice - discount + shippingCost;
- return price;
+    const shippingPerCase =
+        priceData.basePrice > shippingMethod.discountThreshold
+            ? shippingMethod.discountedFee
+            : shippingMethod.feePerCase
+    const shippingCost = quantity * shippingPerCase
+    const price = priceData.basePrice - discount + shippingCost
+    return price
 }
 ```
 
@@ -2065,19 +1990,20 @@ function applyShipping(priceData, basePrice, shippingMethod, quantity, discount)
 
 ```js
 function priceOrder(product, quantity, shippingMethod) {
- const basePrice = product.basePrice * quantity;
- const discount = Math.max(quantity - product.discountThreshold, 0)
-     * product.basePrice * product.discountRate;
- const priceData = {basePrice: basePrice, quantity: quantity};
- const price = applyShipping(priceData, shippingMethod, quantity, discount);
- return price;
+    const basePrice = product.basePrice * quantity
+    const discount = Math.max(quantity - product.discountThreshold, 0) * product.basePrice * product.discountRate
+    const priceData = { basePrice: basePrice, quantity: quantity }
+    const price = applyShipping(priceData, shippingMethod, quantity, discount)
+    return price
 }
 function applyShipping(priceData, shippingMethod, quantity, discount) {
- const shippingPerCase = (priceData.basePrice > shippingMethod.discountThreshold)
-     ? shippingMethod.discountedFee : shippingMethod.feePerCase;
- const shippingCost = priceData.quantity * shippingPerCase;
- const price = priceData.basePrice - discount + shippingCost;
- return price;
+    const shippingPerCase =
+        priceData.basePrice > shippingMethod.discountThreshold
+            ? shippingMethod.discountedFee
+            : shippingMethod.feePerCase
+    const shippingCost = priceData.quantity * shippingPerCase
+    const price = priceData.basePrice - discount + shippingCost
+    return price
 }
 ```
 
@@ -2085,19 +2011,20 @@ function applyShipping(priceData, shippingMethod, quantity, discount) {
 
 ```js
 function priceOrder(product, quantity, shippingMethod) {
- const basePrice = product.basePrice * quantity;
- const discount = Math.max(quantity - product.discountThreshold, 0)
-     * product.basePrice * product.discountRate;
- const priceData = {basePrice: basePrice, quantity: quantity, discount:discount};
- const price = applyShipping(priceData, shippingMethod, discount);
- return price;
+    const basePrice = product.basePrice * quantity
+    const discount = Math.max(quantity - product.discountThreshold, 0) * product.basePrice * product.discountRate
+    const priceData = { basePrice: basePrice, quantity: quantity, discount: discount }
+    const price = applyShipping(priceData, shippingMethod, discount)
+    return price
 }
 function applyShipping(priceData, shippingMethod, discount) {
- const shippingPerCase = (priceData.basePrice > shippingMethod.discountThreshold)
-     ? shippingMethod.discountedFee : shippingMethod.feePerCase;
- const shippingCost = priceData.quantity * shippingPerCase;
- const price = priceData.basePrice - priceData.discount + shippingCost;
- return price;
+    const shippingPerCase =
+        priceData.basePrice > shippingMethod.discountThreshold
+            ? shippingMethod.discountedFee
+            : shippingMethod.feePerCase
+    const shippingCost = priceData.quantity * shippingPerCase
+    const price = priceData.basePrice - priceData.discount + shippingCost
+    return price
 }
 ```
 
@@ -2105,22 +2032,23 @@ function applyShipping(priceData, shippingMethod, discount) {
 
 ```js
 function priceOrder(product, quantity, shippingMethod) {
- const priceData = calculatePricingData(product, quantity);
- const price = applyShipping(priceData, shippingMethod);
- return price;
+    const priceData = calculatePricingData(product, quantity)
+    const price = applyShipping(priceData, shippingMethod)
+    return price
 }
 function calculatePricingData(product, quantity) {
- const basePrice = product.basePrice * quantity;
- const discount = Math.max(quantity - product.discountThreshold, 0)
-     * product.basePrice * product.discountRate;
- return {basePrice: basePrice, quantity: quantity, discount:discount};
+    const basePrice = product.basePrice * quantity
+    const discount = Math.max(quantity - product.discountThreshold, 0) * product.basePrice * product.discountRate
+    return { basePrice: basePrice, quantity: quantity, discount: discount }
 }
 function applyShipping(priceData, shippingMethod) {
- const shippingPerCase = (priceData.basePrice > shippingMethod.discountThreshold)
-     ? shippingMethod.discountedFee : shippingMethod.feePerCase;
- const shippingCost = priceData.quantity * shippingPerCase;
- const price = priceData.basePrice - priceData.discount + shippingCost;
- return price;
+    const shippingPerCase =
+        priceData.basePrice > shippingMethod.discountThreshold
+            ? shippingMethod.discountedFee
+            : shippingMethod.feePerCase
+    const shippingCost = priceData.quantity * shippingPerCase
+    const price = priceData.basePrice - priceData.discount + shippingCost
+    return price
 }
 ```
 
@@ -2128,21 +2056,21 @@ function applyShipping(priceData, shippingMethod) {
 
 ```js
 function priceOrder(product, quantity, shippingMethod) {
- const priceData = calculatePricingData(product, quantity);
- return applyShipping(priceData, shippingMethod);
+    const priceData = calculatePricingData(product, quantity)
+    return applyShipping(priceData, shippingMethod)
 }
-
 
 function calculatePricingData(product, quantity) {
- const basePrice = product.basePrice * quantity;
- const discount = Math.max(quantity - product.discountThreshold, 0)
-     * product.basePrice * product.discountRate;
- return {basePrice: basePrice, quantity: quantity, discount:discount};
+    const basePrice = product.basePrice * quantity
+    const discount = Math.max(quantity - product.discountThreshold, 0) * product.basePrice * product.discountRate
+    return { basePrice: basePrice, quantity: quantity, discount: discount }
 }
 function applyShipping(priceData, shippingMethod) {
- const shippingPerCase = (priceData.basePrice > shippingMethod.discountThreshold)
-     ? shippingMethod.discountedFee : shippingMethod.feePerCase;
- const shippingCost = priceData.quantity * shippingPerCase;
- return priceData.basePrice - priceData.discount + shippingCost;
+    const shippingPerCase =
+        priceData.basePrice > shippingMethod.discountThreshold
+            ? shippingMethod.discountedFee
+            : shippingMethod.feePerCase
+    const shippingCost = priceData.quantity * shippingPerCase
+    return priceData.basePrice - priceData.discount + shippingCost
 }
 ```

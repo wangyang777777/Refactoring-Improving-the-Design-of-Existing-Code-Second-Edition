@@ -11,15 +11,15 @@
 曾用名：分解临时变量（Split Temp）
 
 ```js
-let temp = 2 * (height + width);
-console.log(temp);
-temp = height * width;
-console.log(temp);
+let temp = 2 * (height + width)
+console.log(temp)
+temp = height * width
+console.log(temp)
 
-const perimeter = 2 * (height + width);
-console.log(perimeter);
-const area = height * width;
-console.log(area);
+const perimeter = 2 * (height + width)
+console.log(perimeter)
+const area = height * width
+console.log(area)
 ```
 
 ### 动机
@@ -47,18 +47,18 @@ console.log(area);
 下面范例中我要计算一个苏格兰布丁运动的距离。在起点处，静止的苏格兰布丁会受到一个初始力的作用而开始运动。一段时间后，第二个力作用于布丁，让它再次加速。根据牛顿第二定律，我可以这样计算布丁运动的距离：
 
 ```js
-function distanceTravelled (scenario, time) {
- let result;
- let acc = scenario.primaryForce / scenario.mass;
- let primaryTime = Math.min(time, scenario.delay);
- result = 0.5 * acc * primaryTime * primaryTime;
- let secondaryTime = time - scenario.delay;
- if (secondaryTime > 0) {
-  let primaryVelocity = acc * scenario.delay;
-  acc = (scenario.primaryForce + scenario.secondaryForce) / scenario.mass;
-  result += primaryVelocity * secondaryTime + 0.5 * acc * secondaryTime * secondaryTime;
- }
- return result;
+function distanceTravelled(scenario, time) {
+    let result
+    let acc = scenario.primaryForce / scenario.mass
+    let primaryTime = Math.min(time, scenario.delay)
+    result = 0.5 * acc * primaryTime * primaryTime
+    let secondaryTime = time - scenario.delay
+    if (secondaryTime > 0) {
+        let primaryVelocity = acc * scenario.delay
+        acc = (scenario.primaryForce + scenario.secondaryForce) / scenario.mass
+        result += primaryVelocity * secondaryTime + 0.5 * acc * secondaryTime * secondaryTime
+    }
+    return result
 }
 ```
 
@@ -69,18 +69,18 @@ function distanceTravelled (scenario, time) {
 首先，我在函数开始处修改这个变量的名称，并将新变量声明为 const。接着，我把新变量声明之后、第二次赋值之前对 acc 变量的所有引用，全部改用新变量。最后，我在第二次赋值处重新声明 acc 变量：
 
 ```js
-function distanceTravelled (scenario, time) {
- let result;
- const primaryAcceleration = scenario.primaryForce / scenario.mass;
- let primaryTime = Math.min(time, scenario.delay);
- result = 0.5 * primaryAcceleration * primaryTime * primaryTime;
- let secondaryTime = time - scenario.delay;
- if (secondaryTime > 0) {
-  let primaryVelocity = primaryAcceleration * scenario.delay;
-  let acc = (scenario.primaryForce + scenario.secondaryForce) / scenario.mass;
-  result += primaryVelocity * secondaryTime + 0.5 * acc * secondaryTime * secondaryTime;
- }
- return result;
+function distanceTravelled(scenario, time) {
+    let result
+    const primaryAcceleration = scenario.primaryForce / scenario.mass
+    let primaryTime = Math.min(time, scenario.delay)
+    result = 0.5 * primaryAcceleration * primaryTime * primaryTime
+    let secondaryTime = time - scenario.delay
+    if (secondaryTime > 0) {
+        let primaryVelocity = primaryAcceleration * scenario.delay
+        let acc = (scenario.primaryForce + scenario.secondaryForce) / scenario.mass
+        result += primaryVelocity * secondaryTime + 0.5 * acc * secondaryTime * secondaryTime
+    }
+    return result
 }
 ```
 
@@ -89,19 +89,18 @@ function distanceTravelled (scenario, time) {
 然后，我继续处理 acc 变量的第二次赋值。这次我把原先的变量完全删掉，代之以一个新变量。新变量的名称指出，它只承担原先 acc 变量的第二个责任：
 
 ```js
-function distanceTravelled (scenario, time) {
- let result;
- const primaryAcceleration = scenario.primaryForce / scenario.mass;
- let primaryTime = Math.min(time, scenario.delay);
- result = 0.5 * primaryAcceleration * primaryTime * primaryTime;
- let secondaryTime = time - scenario.delay;
- if (secondaryTime > 0) {
-  let primaryVelocity = primaryAcceleration * scenario.delay;
-  const secondaryAcceleration = (scenario.primaryForce + scenario.secondaryForce) / scenario.mass;
-  result += primaryVelocity * secondaryTime +
-   0.5 * secondaryAcceleration * secondaryTime * secondaryTime;
- }
- return result;
+function distanceTravelled(scenario, time) {
+    let result
+    const primaryAcceleration = scenario.primaryForce / scenario.mass
+    let primaryTime = Math.min(time, scenario.delay)
+    result = 0.5 * primaryAcceleration * primaryTime * primaryTime
+    let secondaryTime = time - scenario.delay
+    if (secondaryTime > 0) {
+        let primaryVelocity = primaryAcceleration * scenario.delay
+        const secondaryAcceleration = (scenario.primaryForce + scenario.secondaryForce) / scenario.mass
+        result += primaryVelocity * secondaryTime + 0.5 * secondaryAcceleration * secondaryTime * secondaryTime
+    }
+    return result
 }
 ```
 
@@ -112,10 +111,10 @@ function distanceTravelled (scenario, time) {
 另一种情况是，变量是以输入参数的形式声明又在函数内部被再次赋值，此时也可以考虑拆分变量。例如，下列代码：
 
 ```js
-function discount (inputValue, quantity) {
- if (inputValue > 50) inputValue = inputValue - 2;
- if (quantity > 100) inputValue = inputValue - 1;
- return inputValue;
+function discount(inputValue, quantity) {
+    if (inputValue > 50) inputValue = inputValue - 2
+    if (quantity > 100) inputValue = inputValue - 1
+    return inputValue
 }
 ```
 
@@ -124,22 +123,22 @@ function discount (inputValue, quantity) {
 在这种情况下，我就会对 inputValue 变量做拆分。
 
 ```js
-function discount (originalInputValue, quantity) {
- let inputValue = originalInputValue;
- if (inputValue > 50) inputValue = inputValue - 2;
- if (quantity > 100) inputValue = inputValue - 1;
- return inputValue;
+function discount(originalInputValue, quantity) {
+    let inputValue = originalInputValue
+    if (inputValue > 50) inputValue = inputValue - 2
+    if (quantity > 100) inputValue = inputValue - 1
+    return inputValue
 }
 ```
 
 然后用变量改名（137）给两个变量换上更好的名字。
 
 ```js
-function discount (inputValue, quantity) {
- let result = inputValue;
- if (inputValue > 50) result = result - 2;
- if (quantity > 100) result = result - 1;
- return result;
+function discount(inputValue, quantity) {
+    let result = inputValue
+    if (inputValue > 50) result = result - 2
+    if (quantity > 100) result = result - 1
+    return result
 }
 ```
 
@@ -187,35 +186,35 @@ class  Organization {
 我们从一个常量开始。
 
 ```js
-const organization = { name: "Acme Gooseberries", country: "GB" };
+const organization = { name: "Acme Gooseberries", country: "GB" }
 ```
 
 我想把 name 改名为 title。这个对象被很多地方使用，有些代码会更新 name 字段。所以我首先要用封装记录（162）把这个记录封装起来。
 
 ```js
 class Organization {
-  constructor(data) {
-    this._name = data.name;
-    this._country = data.country;
-  }
-  get name() {
-    return this._name;
-  }
-  set name(aString) {
-    this._name = aString;
-  }
-  get country() {
-    return this._country;
-  }
-  set country(aCountryCode) {
-    this._country = aCountryCode;
-  }
+    constructor(data) {
+        this._name = data.name
+        this._country = data.country
+    }
+    get name() {
+        return this._name
+    }
+    set name(aString) {
+        this._name = aString
+    }
+    get country() {
+        return this._country
+    }
+    set country(aCountryCode) {
+        this._country = aCountryCode
+    }
 }
 
 const organization = new Organization({
-  name: "Acme Gooseberries",
-  country: "GB",
-});
+    name: "Acme Gooseberries",
+    country: "GB"
+})
 ```
 
 现在，记录结构已经被封装成类。在对字段改名时，有 4 个地方需要留意：取值函数、设值函数、构造函数以及内部数据结构。这听起来似乎是增加了重构的工作量，但现在我可以分别小步修改这 4 处，而不必一次修改所有地方，所以其实是降低了重构的难度。小步修改就意味着每一步出错的可能性大大减小，因此会省掉很多工作量——如果我从不犯错，小步前进不会节省工作量；但“从不犯错”这样的梦，我很久以前就已经不做了。
@@ -226,22 +225,22 @@ const organization = new Organization({
 
 ```js
 class Organization {
-  constructor(data) {
-    this._title = data.name;
-    this._country = data.country;
-  }
-  get name() {
-    return this._title;
-  }
-  set name(aString) {
-    this._title = aString;
-  }
-  get country() {
-    return this._country;
-  }
-  set country(aCountryCode) {
-    this._country = aCountryCode;
-  }
+    constructor(data) {
+        this._title = data.name
+        this._country = data.country
+    }
+    get name() {
+        return this._title
+    }
+    set name(aString) {
+        this._title = aString
+    }
+    get country() {
+        return this._country
+    }
+    set country(aCountryCode) {
+        this._country = aCountryCode
+    }
 }
 ```
 
@@ -251,22 +250,22 @@ class Organization {
 
 ```js
 class Organization {
-  constructor(data) {
-    this._title = data.title !== undefined ? data.title : data.name;
-    this._country = data.country;
-  }
-  get name() {
-    return this._title;
-  }
-  set name(aString) {
-    this._title = aString;
-  }
-  get country() {
-    return this._country;
-  }
-  set country(aCountryCode) {
-    this._country = aCountryCode;
-  }
+    constructor(data) {
+        this._title = data.title !== undefined ? data.title : data.name
+        this._country = data.country
+    }
+    get name() {
+        return this._title
+    }
+    set name(aString) {
+        this._title = aString
+    }
+    get country() {
+        return this._country
+    }
+    set country(aCountryCode) {
+        this._country = aCountryCode
+    }
 }
 ```
 
@@ -274,9 +273,9 @@ class Organization {
 
 ```js
 const organization = new Organization({
-  title: "Acme Gooseberries",
-  country: "GB",
-});
+    title: "Acme Gooseberries",
+    country: "GB"
+})
 ```
 
 全部修改完成后，就可以在构造函数中去掉对 name 的支持，只使用 title。
@@ -285,22 +284,22 @@ const organization = new Organization({
 
 ```js
 class Organization {
-  constructor(data) {
-    this._title = data.title;
-    this._country = data.country;
-  }
-  get name() {
-    return this._title;
-  }
-  set name(aString) {
-    this._title = aString;
-  }
-  get country() {
-    return this._country;
-  }
-  set country(aCountryCode) {
-    this._country = aCountryCode;
-  }
+    constructor(data) {
+        this._title = data.title
+        this._country = data.country
+    }
+    get name() {
+        return this._title
+    }
+    set name(aString) {
+        this._title = aString
+    }
+    get country() {
+        return this._country
+    }
+    set country(aCountryCode) {
+        this._country = aCountryCode
+    }
 }
 ```
 
@@ -310,22 +309,22 @@ class Organization {
 
 ```js
 class Organization {
-  constructor(data) {
-    this._title = data.title;
-    this._country = data.country;
-  }
-  get title() {
-    return this._title;
-  }
-  set title(aString) {
-    this._title = aString;
-  }
-  get country() {
-    return this._country;
-  }
-  set country(aCountryCode) {
-    this._country = aCountryCode;
-  }
+    constructor(data) {
+        this._title = data.title
+        this._country = data.country
+    }
+    get title() {
+        return this._title
+    }
+    set title(aString) {
+        this._title = aString
+    }
+    get country() {
+        return this._country
+    }
+    set country(aCountryCode) {
+        this._country = aCountryCode
+    }
 }
 ```
 
@@ -336,16 +335,21 @@ class Organization {
 ## 9.3 以查询取代派生变量（Replace Derived Variable with Query）
 
 ```js
-get discountedTotal() {return this._discountedTotal;}
+get discountedTotal() {
+    return this._discountedTotal
+}
 set discount(aNumber) {
- const old = this._discount;
- this._discount = aNumber;
- this._discountedTotal += old - aNumber;
+    const old = this._discount
+    this._discount = aNumber
+    this._discountedTotal += old - aNumber
 }
 
-
-get discountedTotal() {return this._baseTotal - this._discount;}
-set discount(aNumber) {this._discount = aNumber;}
+get discountedTotal() {
+    return this._baseTotal - this._discount
+}
+set discount(aNumber) {
+    this._discount = aNumber
+}
 ```
 
 ### 动机
@@ -381,10 +385,12 @@ set discount(aNumber) {this._discount = aNumber;}
 #### class ProductionPlan...
 
 ```js
-get production() {return this._production;}
+get production() {
+    return this._production
+}
 applyAdjustment(anAdjustment) {
- this._adjustments.push(anAdjustment);
- this._production += anAdjustment.amount;
+    this._adjustments.push(anAdjustment)
+    this._production += anAdjustment.amount
 }
 ```
 
@@ -396,13 +402,12 @@ applyAdjustment(anAdjustment) {
 
 ```js
 get production() {
- assert(this._production === this.calculatedProduction);
- return this._production;
+    assert(this._production === this.calculatedProduction)
+    return this._production
 }
 
 get calculatedProduction() {
- return this._adjustments
-  .reduce((sum, a) => sum + a.amount, 0);
+    return this._adjustments.reduce((sum, a) => sum + a.amount, 0)
 }
 ```
 
@@ -412,8 +417,8 @@ get calculatedProduction() {
 
 ```js
 get production() {
-  assert(this._production === this.calculatedProduction);
-  return this.calculatedProduction;
+    assert(this._production === this.calculatedProduction)
+    return this.calculatedProduction
 }
 ```
 
@@ -423,8 +428,7 @@ get production() {
 
 ```js
 get production() {
-  return this._adjustments
-    .reduce((sum, a) => sum + a.amount, 0);
+    return this._adjustments.reduce((sum, a) => sum + a.amount, 0)
 }
 ```
 
@@ -433,9 +437,9 @@ get production() {
 #### class ProductionPlan...
 
 ```js
-  applyAdjustment(anAdjustment) {
-  this._adjustments.push(anAdjustment);
-  this._production += anAdjustment.amount;
+applyAdjustment(anAdjustment) {
+    this._adjustments.push(anAdjustment)
+    this._production += anAdjustment.amount
 }
 ```
 
@@ -446,14 +450,16 @@ get production() {
 #### class ProductionPlan...
 
 ```js
-  constructor (production) {
- this._production = production;
- this._adjustments = [];
+constructor(production) {
+    this._production = production
+    this._adjustments = []
 }
-get production() {return this._production;}
+get production() {
+    return this._production
+}
 applyAdjustment(anAdjustment) {
- this._adjustments.push(anAdjustment);
- this._production += anAdjustment.amount;
+    this._adjustments.push(anAdjustment)
+    this._production += anAdjustment.amount
 }
 ```
 
@@ -462,13 +468,13 @@ applyAdjustment(anAdjustment) {
 不过我还是可以替换派生数据，只不过必须先运用拆分变量（240）。
 
 ```js
-constructor (production) {
- this._initialProduction = production;
- this._productionAccumulator = 0;
- this._adjustments = [];
+constructor(production) {
+    this._initialProduction = production
+    this._productionAccumulator = 0
+    this._adjustments = []
 }
 get production() {
- return this._initialProduction + this._productionAccumulator;
+    return this._initialProduction + this._productionAccumulator
 }
 ```
 
@@ -478,13 +484,12 @@ get production() {
 
 ```js
 get production() {
- assert(this._productionAccumulator === this.calculatedProductionAccumulator);
- return this._initialProduction + this._productionAccumulator;
+    assert(this._productionAccumulator === this.calculatedProductionAccumulator)
+    return this._initialProduction + this._productionAccumulator
 }
 
 get calculatedProductionAccumulator() {
- return this._adjustments
-  .reduce((sum, a) => sum + a.amount, 0);
+    return this._adjustments.reduce((sum, a) => sum + a.amount, 0)
 }
 ```
 
@@ -496,12 +501,15 @@ get calculatedProductionAccumulator() {
 
 ```js
 class Product {
-applyDiscount(arg) {this._price.amount -= arg;}
-
+    applyDiscount(arg) {
+        this._price.amount -= arg
+    }
+}
 
 class Product {
-applyDiscount(arg) {
-  this._price = new Money(this._price.amount - arg, this._price.currency);
+    applyDiscount(arg) {
+        this._price = new Money(this._price.amount - arg, this._price.currency)
+    }
 }
 ```
 
@@ -530,25 +538,40 @@ applyDiscount(arg) {
 #### class Person...
 
 ```js
-  constructor() {
-  constructor() {
- this._telephoneNumber = new TelephoneNumber();
+constructor() {
+    this._telephoneNumber = new TelephoneNumber()
 }
 
-get officeAreaCode()  {return this._telephoneNumber.areaCode;}
-set officeAreaCode(arg) {this._telephoneNumber.areaCode = arg;}
-get officeNumber()  {return this._telephoneNumber.number;}
-set officeNumber(arg) {this._telephoneNumber.number = arg;}
+get officeAreaCode() {
+    return this._telephoneNumber.areaCode
+}
+set officeAreaCode(arg) {
+    this._telephoneNumber.areaCode = arg
+}
+get officeNumber() {
+    return this._telephoneNumber.number
+}
+set officeNumber(arg) {
+    this._telephoneNumber.number = arg
+}
 ```
 
 #### class TelephoneNumber...
 
 ```js
-  get areaCode()    {return this._areaCode;}
-set areaCode(arg) {this._areaCode = arg;}
+get areaCode() {
+    return this._areaCode
+}
+set areaCode(arg) {
+    this._areaCode = arg
+}
 
-get number()    {return this._number;}
-set number(arg) {this._number = arg;}
+get number() {
+    return this._number
+}
+set number(arg) {
+    this._number = arg
+}
 ```
 
 代码的当前状态是提炼类（182）留下的结果：从前拥有电话号码信息的 Person 类仍然有一些函数在修改新对象的属性。趁着还只有一个指向新类的引用，现在是时候使用将引用对象改为值对象将其变成值对象。
@@ -558,9 +581,9 @@ set number(arg) {this._number = arg;}
 #### class TelephoneNumber...
 
 ```js
-  constructor(areaCode, number) {
-  this._areaCode = areaCode;
-  this._number = number;
+constructor(areaCode, number) {
+    this._areaCode = areaCode
+    this._number = number
 }
 ```
 
@@ -569,12 +592,18 @@ set number(arg) {this._number = arg;}
 #### class Person...
 
 ```js
-  get officeAreaCode()    {return this._telephoneNumber.areaCode;}
-set officeAreaCode(arg) {
- this._telephoneNumber = new TelephoneNumber(arg, this.officeNumber);
+get officeAreaCode() {
+    return this._telephoneNumber.areaCode
 }
-get officeNumber()   {return this._telephoneNumber.number;}
-set officeNumber(arg) {this._telephoneNumber.number = arg;}
+set officeAreaCode(arg) {
+    this._telephoneNumber = new TelephoneNumber(arg, this.officeNumber)
+}
+get officeNumber() {
+    return this._telephoneNumber.number
+}
+set officeNumber(arg) {
+    this._telephoneNumber.number = arg
+}
 ```
 
 对于其他字段，重复上述步骤。
@@ -582,13 +611,17 @@ set officeNumber(arg) {this._telephoneNumber.number = arg;}
 #### class Person...
 
 ```js
-  get officeAreaCode()    {return this._telephoneNumber.areaCode;}
-set officeAreaCode(arg) {
-  this._telephoneNumber = new TelephoneNumber(arg, this.officeNumber);
+get officeAreaCode() {
+    return this._telephoneNumber.areaCode
 }
-get officeNumber()    {return this._telephoneNumber.number;}
+set officeAreaCode(arg) {
+    this._telephoneNumber = new TelephoneNumber(arg, this.officeNumber)
+}
+get officeNumber() {
+    return this._telephoneNumber.number
+}
 set officeNumber(arg) {
- this._telephoneNumber = new TelephoneNumber(this.officeAreaCode, arg);
+    this._telephoneNumber = new TelephoneNumber(this.officeAreaCode, arg)
 }
 ```
 
@@ -597,10 +630,9 @@ set officeNumber(arg) {
 #### class TelephoneNumber...
 
 ```js
-  equals(other) {
- if (!(other instanceof TelephoneNumber)) return false;
- return this.areaCode === other.areaCode &amp;&amp;
-  this.number === other.number;
+equals(other) {
+    if (!(other instanceof TelephoneNumber)) return false
+    return this.areaCode === other.areaCode && this.number === other.number
 }
 ```
 
@@ -608,12 +640,8 @@ set officeNumber(arg) {
 
 ```js
 it("telephone equals", function () {
-  assert(
-    new TelephoneNumber("312", "555-0142").equals(
-      new TelephoneNumber("312", "555-0142")
-    )
-  );
-});
+    assert(new TelephoneNumber("312", "555-0142").equals(new TelephoneNumber("312", "555-0142")))
+})
 ```
 
 这段测试代码用了不寻常的格式，是为了帮助读者一眼看出上下两次构造函数调用完全一样。
@@ -629,9 +657,9 @@ it("telephone equals", function () {
 反向重构：将引用对象改为值对象（252）
 
 ```js
-let customer = new Customer(customerData);
+let customer = new Customer(customerData)
 
-let customer = customerRepository.get(customerData.id);
+let customer = customerRepository.get(customerData.id)
 ```
 
 ### 动机
@@ -659,21 +687,25 @@ let customer = customerRepository.get(customerData.id);
 #### class Order...
 
 ```js
-  constructor(data) {
-  this._number = data.number;
-  this._customer = new Customer(data.customer);
-  // load other data
+constructor(data) {
+    this._number = data.number
+    this._customer = new Customer(data.customer)
+    // load other data
 }
-get customer() {return this._customer;}
+get customer() {
+    return this._customer
+}
 ```
 
 #### class Customer...
 
 ```js
-  constructor(id) {
-  this._id = id;
+constructor(id) {
+    this._id = id
 }
-get id() {return this._id;}
+get id() {
+    return this._id
+}
 ```
 
 以这种方式创建的 Customer 对象是值对象。如果有 5 个订单都属于 ID 为 123 的顾客，就会有 5 个各自独立的 Customer 对象。对其中一个所做的修改，不会反映在其他几个对象身上。如果我想增强 Customer 对象，例如从客户服务获取到了更多关于顾客的信息，我必须用同样的数据更新所有 5 个对象。重复的对象总是会让我紧张——用多个对象代表同一个实体（例如一名顾客），这会招致混乱。如果 Customer 对象是可变的，问题就更加严重，因为各个对象之间的数据可能不一致。
@@ -681,21 +713,20 @@ get id() {return this._id;}
 如果我想每次都使用同一个 Customer 对象，那么就需要有一个地方存储这个对象。每个应用程序中，存储实体的地方会各有不同，在最简单的情况下，我会使用一个仓库对象[mf-repos]。
 
 ```js
-let _repositoryData;
+let _repositoryData
 
 export function initialize() {
-  _repositoryData = {};
-  _repositoryData.customers = new Map();
+    _repositoryData = {}
+    _repositoryData.customers = new Map()
 }
 
 export function registerCustomer(id) {
-  if (!_repositoryData.customers.has(id))
-    _repositoryData.customers.set(id, new Customer(id));
-  return findCustomer(id);
+    if (!_repositoryData.customers.has(id)) _repositoryData.customers.set(id, new Customer(id))
+    return findCustomer(id)
 }
 
 export function findCustomer(id) {
-  return _repositoryData.customers.get(id);
+    return _repositoryData.customers.get(id)
 }
 ```
 
@@ -708,12 +739,14 @@ export function findCustomer(id) {
 #### class Order...
 
 ```js
-  constructor(data) {
- this._number = data.number;
- this._customer = registerCustomer(data.customer);
- // load other data
+constructor(data) {
+    this._number = data.number
+    this._customer = registerCustomer(data.customer)
+    // load other data
 }
-get customer() {return this._customer;}
+get customer() {
+    return this._customer
+}
 ```
 
 现在，如果我在一条订单中修改了顾客信息，就会同步反映在该顾客拥有的所有订单中。

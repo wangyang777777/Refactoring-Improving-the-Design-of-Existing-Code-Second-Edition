@@ -14,11 +14,12 @@
 
 ```js
 class Account {
-get overdraftCharge() {...}
-
+    get overdraftCharge() {}
+}
 
 class AccountType {
-  get overdraftCharge() {...}
+    get overdraftCharge() {}
+}
 ```
 
 ### 动机
@@ -69,27 +70,26 @@ class AccountType {
 
 ```js
 function trackSummary(points) {
- const totalTime = calculateTime();
- const totalDistance = calculateDistance();
- const pace = totalTime / 60 / totalDistance ;
- return {
-  time: totalTime,
-  distance: totalDistance,
-  pace: pace
- };
+    const totalTime = calculateTime()
+    const totalDistance = calculateDistance()
+    const pace = totalTime / 60 / totalDistance
+    return {
+        time: totalTime,
+        distance: totalDistance,
+        pace: pace
+    }
 
- function calculateDistance() {
-  let result = 0;
-  for (let i = 1; i < points.length; i++) {
-   result += distance(points[i-1],  points[i]);
-  }
-  return result;
- }
+    function calculateDistance() {
+        let result = 0
+        for (let i = 1; i < points.length; i++) {
+            result += distance(points[i - 1], points[i])
+        }
+        return result
+    }
 
- function distance(p1,p2) { ... }
- function radians(degrees) { ... }
- function calculateTime() { ... }
-
+    function distance(p1, p2) {}
+    function radians(degrees) {}
+    function calculateTime() {}
 }
 ```
 
@@ -98,37 +98,36 @@ function trackSummary(points) {
 我先将函数复制一份到顶层作用域中：
 
 ```js
-  function trackSummary(points) {
- const totalTime = calculateTime();
- const totalDistance = calculateDistance();
- const pace = totalTime / 60 / totalDistance ;
- return {
-  time: totalTime,
-  distance: totalDistance,
-  pace: pace
- };
+function trackSummary(points) {
+    const totalTime = calculateTime()
+    const totalDistance = calculateDistance()
+    const pace = totalTime / 60 / totalDistance
+    return {
+        time: totalTime,
+        distance: totalDistance,
+        pace: pace
+    }
 
- function calculateDistance() {
-  let result  =  0;
-  for (let i = 1; i < points.length; i++) {
-   result += distance(points[i-1], points[i]);
-  }
-  return result;
- }
- ...
- function distance(p1,p2) { ... }
- function radians(degrees) { ... }
- function calculateTime() { ... }
-
+    function calculateDistance() {
+        let result = 0
+        for (let i = 1; i < points.length; i++) {
+            result += distance(points[i - 1], points[i])
+        }
+        return result
+    }
+    ...
+    function distance(p1, p2) {}
+    function radians(degrees) {}
+    function calculateTime() {}
 }
 
- function top_calculateDistance() {
-  let result  =  0;
-  for (let i = 1; i < points.length; i++) {
-   result += distance(points[i-1],  points[i]);
-  }
-  return result;
- }
+function top_calculateDistance() {
+    let result = 0
+    for (let i = 1; i < points.length; i++) {
+        result += distance(points[i - 1], points[i])
+    }
+    return result
+}
 ```
 
 复制函数时，我习惯为函数一并改个名，这样可让“它们有不同的作用域”这个信息显得一目了然。现在我还不想花费心思考虑它正确的名字该是什么，因此我暂且先用一个临时的名字。
@@ -136,12 +135,12 @@ function trackSummary(points) {
 此时代码依然能正常工作，但我的静态分析器要开始抱怨了，它说新函数里多了两个未定义的符号，分别是 distance 和 points。对于 points，自然是将其作为函数参数传进来。
 
 ```js
-  function top_calculateDistance(points) {
- let result =0;
- for (let i = 1; i < points.length; i++) {
-  result += distance(points[i-1],  points[i]);
- }
- return result;
+function top_calculateDistance(points) {
+    let result = 0
+    for (let i = 1; i < points.length; i++) {
+        result += distance(points[i - 1], points[i])
+    }
+    return result
 }
 ```
 
@@ -151,61 +150,57 @@ function trackSummary(points) {
 
 ```js
 function distance(p1, p2) {
-  const EARTH_RADIUS = 3959; // in miles
-  const dLat = radians(p2.lat) - radians(p1.lat);
-  const dLon = radians(p2.lon) - radians(p1.lon);
-  const a =
-    Math.pow(Math.sin(dLat / 2), 2) +
-    Math.cos(radians(p2.lat)) *
-      Math.cos(radians(p1.lat)) *
-      Math.pow(Math.sin(dLon / 2), 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return EARTH_RADIUS * c;
+    const EARTH_RADIUS = 3959 // in miles
+    const dLat = radians(p2.lat) - radians(p1.lat)
+    const dLon = radians(p2.lon) - radians(p1.lon)
+    const a =
+        Math.pow(Math.sin(dLat / 2), 2) +
+        Math.cos(radians(p2.lat)) * Math.cos(radians(p1.lat)) * Math.pow(Math.sin(dLon / 2), 2)
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+    return EARTH_RADIUS * c
 }
 function radians(degrees) {
-  return (degrees * Math.PI) / 180;
+    return (degrees * Math.PI) / 180
 }
 ```
 
 我留意到 distance 函数中只调用了 radians 函数，后者已经没有再引用当前上下文里的任何元素。因此与其将 radians 作为参数，我更倾向于将它也一并搬移。不过我不需要一步到位，我们可以先将这两个函数从当前上下文中搬移进 calculateDistance 函数里：
 
 ```js
-  function trackSummary(points) {
- const totalTime = calculateTime();
- const totalDistance = calculateDistance();
- const pace = totalTime / 60 / totalDistance ;
- return {
-  time: totalTime,
-  distance: totalDistance,
-  pace: pace
- };
+function trackSummary(points) {
+    const totalTime = calculateTime()
+    const totalDistance = calculateDistance()
+    const pace = totalTime / 60 / totalDistance
+    return {
+        time: totalTime,
+        distance: totalDistance,
+        pace: pace
+    }
 
- function calculateDistance() {
-  let result = 0;
-  for (let i = 1; i < points.length; i++) {
-   result += distance(points[i-1], points[i]);
-  }
-  return result;
+function calculateDistance() {
+    let result = 0
+    for (let i = 1; i < points.length; i++) {
+        result += distance(points[i - 1], points[i])
+    }
+    return result
 
-  function distance(p1,p2) { ... }
-  function radians(degrees) { ... }
-
+    function distance(p1, p2) {}
+    function radians(degrees) {}
 }
 ```
 
 这样做的好处是，我可以充分发挥静态检查和测试的作用，让它们帮我检查有无遗漏的东西。在这个实例中一切顺利，因此，我可以放心地将这两个函数直接复制到 top_calculateDistance 中：
 
 ```js
-  function top_calculateDistance(points) {
- let result = 0;
- for (let i = 1; i < points.length; i++) {
-  result += distance(points[i-1],  points[i]);
- }
- return result;
+function top_calculateDistance(points) {
+    let result = 0
+    for (let i = 1; i < points.length; i++) {
+        result += distance(points[i - 1], points[i])
+    }
+    return result
 
- function distance(p1,p2) { ... }
- function radians(degrees) { ... }
-
+    function distance(p1, p2) {}
+    function radians(degrees) {}
 }
 ```
 
@@ -214,19 +209,19 @@ function radians(degrees) {
 现在万事俱备，是时候端出主菜了——我要在原 calculateDistance 函数体内调用 top_calculateDistance 函数：
 
 ```js
-  function trackSummary(points) {
- const totalTime = calculateTime();
- const totalDistance = calculateDistance();
- const pace = totalTime / 60 / totalDistance ;
- return {
-  time: totalTime,
-  distance: totalDistance,
-  pace: pace
- };
+function trackSummary(points) {
+    const totalTime = calculateTime()
+    const totalDistance = calculateDistance()
+    const pace = totalTime / 60 / totalDistance
+    return {
+        time: totalTime,
+        distance: totalDistance,
+        pace: pace
+    }
 
- function calculateDistance() {
-  return top_calculateDistance(points);
- }
+    function calculateDistance() {
+        return top_calculateDistance(points)
+    }
 ```
 
 接下来最重要的事是要运行一遍测试，看看功能是否仍然完整，函数在其新家待得是否舒适。
@@ -235,35 +230,35 @@ function radians(degrees) {
 
 ```js
 function trackSummary(points) {
-  const totalTime = calculateTime();
-  const totalDistance = top_calculateDistance(points);
-  const pace = totalTime / 60 / totalDistance;
-  return {
-    time: totalTime,
-    distance: totalDistance,
-    pace: pace,
-  };
+    const totalTime = calculateTime()
+    const totalDistance = top_calculateDistance(points)
+    const pace = totalTime / 60 / totalDistance
+    return {
+        time: totalTime,
+        distance: totalDistance,
+        pace: pace
+    }
 }
 ```
 
 同时，也该是时候为这个函数认真想个名字了。因为顶层函数拥有最高的可见性，因此取个好名非常重要。totalDistance 听起来不错，但还不能马上用这个名字，因为 trackSummary 函数中有一个同名的变量——我不觉得这个变量有保留的价值，因此我们先用内联变量（123）处理它，之后再使用改变函数声明（124）：
 
 ```js
-  function trackSummary(points) {
- const totalTime = calculateTime();
- const pace = totalTime / 60 / totalDistance(points) ;
- return {
-  time: totalTime,
-  distance: totalDistance(points),
-  pace: pace
- };
+function trackSummary(points) {
+    const totalTime = calculateTime()
+    const pace = totalTime / 60 / totalDistance(points)
+    return {
+        time: totalTime,
+        distance: totalDistance(points),
+        pace: pace
+    }
 }
 function totalDistance(points) {
- let result = 0;
- for (let i = 1; i < points.length; i++) {
-  result += distance(points[i-1], points[i]);
- }
- return result;
+    let result = 0
+    for (let i = 1; i < points.length; i++) {
+        result += distance(points[i - 1], points[i])
+    }
+    return result
 }
 ```
 
@@ -272,10 +267,10 @@ function totalDistance(points) {
 由于 distance 函数和 radians 函数并未使用 totalDistance 中的任何变量或函数，因此我倾向于把它们也提升到顶层，也就是 4 个方法都放置在顶层作用域上。
 
 ```js
-  function trackSummary(points) { ... }
-function totalDistance(points) { ... }
-function distance(p1,p2) { ... }
-function radians(degrees) { ... }
+function trackSummary(points) {}
+function totalDistance(points) {}
+function distance(p1, p2) {}
+function radians(degrees) {}
 ```
 
 有些人则更倾向于将 distance 和 radians 函数保留在 totalDistance 内，以便限制它们的可见性。在某些语言里，这个顾虑也许有其道理，但新的 ES 2015 规范为 JavaScript 提供了一个美妙的模块化机制，利用它来控制函数的可见性是再好不过了。通常来说，我对嵌套函数还是心存警惕的，因为很容易在里面编写一些私有数据，并且在函数之间共享，这可能会增加代码的阅读和重构难度。
@@ -287,22 +282,18 @@ function radians(degrees) { ... }
 #### class Account...
 
 ```js
-  get bankCharge() {
- let result = 4.5;
- if (this._daysOverdrawn > 0) result += this.overdraftCharge;
- return result;
+get bankCharge() {
+    let result = 4.5
+    if (this._daysOverdrawn > 0) result += this.overdraftCharge
+    return result
 }
 
 get overdraftCharge() {
- if (this.type.isPremium) {
-  const baseCharge = 10;
-  if (this.daysOverdrawn <= 7)
-   return baseCharge;
-  else
-   return baseCharge + (this.daysOverdrawn - 7) * 0.85;
- }
- else
-  return this.daysOverdrawn * 1.75;
+    if (this.type.isPremium) {
+        const baseCharge = 10
+        if (this.daysOverdrawn <= 7) return baseCharge
+        else return baseCharge + (this.daysOverdrawn - 7) * 0.85
+    } else return this.daysOverdrawn * 1.75
 }
 ```
 
@@ -315,16 +306,12 @@ get overdraftCharge() {
 #### class AccountType...
 
 ```js
-  overdraftCharge(daysOverdrawn) {
- if (this.isPremium) {
-  const baseCharge  =  10;
-  if (daysOverdrawn <= 7)
-   return baseCharge;
-  else
-   return baseCharge + (daysOverdrawn - 7) * 0.85;
- }
- else
-  return daysOverdrawn * 1.75;
+overdraftCharge(daysOverdrawn) {
+    if (this.isPremium) {
+        const baseCharge = 10
+        if (daysOverdrawn <= 7) return baseCharge
+        else return baseCharge + (daysOverdrawn - 7) * 0.85
+    } else return daysOverdrawn * 1.75
 }
 ```
 
@@ -335,14 +322,14 @@ get overdraftCharge() {
 #### class Account...
 
 ```js
-  get bankCharge() {
- let result = 4.5;
- if (this._daysOverdrawn > 0) result += this.overdraftCharge;
- return result;
+get bankCharge() {
+    let result = 4.5
+    if (this._daysOverdrawn > 0) result += this.overdraftCharge
+    return result
 }
 
 get overdraftCharge() {
- return this.type.overdraftCharge(this.daysOverdrawn);
+    return this.type.overdraftCharge(this.daysOverdrawn)
 }
 ```
 
@@ -351,11 +338,10 @@ get overdraftCharge() {
 #### class Account...
 
 ```js
-  get bankCharge() {
- let result = 4.5;
- if (this._daysOverdrawn > 0)
-  result += this.type.overdraftCharge(this.daysOverdrawn);
- return result;
+get bankCharge() {
+    let result = 4.5
+    if (this._daysOverdrawn > 0) result += this.type.overdraftCharge(this.daysOverdrawn)
+    return result
 }
 ```
 
@@ -364,44 +350,49 @@ get overdraftCharge() {
 #### class Account...
 
 ```js
-  get bankCharge() {
- let result = 4.5;
- if (this._daysOverdrawn > 0) result += this.overdraftCharge;
- return result;
+get bankCharge() {
+    let result = 4.5
+    if (this._daysOverdrawn > 0) result += this.overdraftCharge
+    return result
 }
 
 get overdraftCharge() {
- return this.type.overdraftCharge(this);
+    return this.type.overdraftCharge(this)
 }
 ```
 
 class AccountType…
 
 ```js
-  overdraftCharge(account) {
- if (this.isPremium) {
-  const baseCharge = 10;
-  if (account.daysOverdrawn <= 7)
-   return baseCharge;
-  else
-   return baseCharge + (account.daysOverdrawn - 7) * 0.85;
- }
- else
-  return account.daysOverdrawn * 1.75;
+overdraftCharge(account) {
+    if (this.isPremium) {
+        const baseCharge = 10
+        if (account.daysOverdrawn <= 7) return baseCharge
+        else return baseCharge + (account.daysOverdrawn - 7) * 0.85
+    } else return account.daysOverdrawn * 1.75
 }
 ```
 
 ## 8.2 搬移字段（Move Field）
 
 ```js
-  class Customer {
-  get plan() {return this._plan;}
-  get discountRate() {return this._discountRate;}
+class Customer {
+    get plan() {
+        return this._plan
+    }
+    get discountRate() {
+        return this._discountRate
+    }
+}
 
-
-  class Customer {
-  get plan() {return this._plan;}
-  get discountRate() {return this.plan.discountRate;}
+class Customer {
+    get plan() {
+        return this._plan
+    }
+    get discountRate() {
+        return this.plan.discountRate
+    }
+}
 ```
 
 ### 动机
@@ -449,26 +440,28 @@ class AccountType…
 #### class Customer...
 
 ```js
-  constructor(name, discountRate) {
- this._name = name;
- this._discountRate = discountRate;
- this._contract = new CustomerContract(dateToday());
+constructor(name, discountRate) {
+    this._name = name
+    this._discountRate = discountRate
+    this._contract = new CustomerContract(dateToday())
 }
-get discountRate() {return this._discountRate;}
+get discountRate() {
+    return this._discountRate
+}
 becomePreferred() {
- this._discountRate += 0.03;
- // other nice things
+    this._discountRate += 0.03
+    // other nice things
 }
 applyDiscount(amount) {
- return amount.subtract(amount.multiply(this._discountRate));
+    return amount.subtract(amount.multiply(this._discountRate))
 }
 ```
 
 #### class CustomerContract...
 
 ```js
-  constructor(startDate) {
-  this._startDate = startDate;
+constructor(startDate) {
+    this._startDate = startDate
 }
 ```
 
@@ -479,19 +472,23 @@ applyDiscount(amount) {
 #### class Customer...
 
 ```js
-  constructor(name, discountRate) {
- this._name = name;
- this._setDiscountRate(discountRate);
- this._contract = new CustomerContract(dateToday());
+constructor(name, discountRate) {
+    this._name = name
+    this._setDiscountRate(discountRate)
+    this._contract = new CustomerContract(dateToday())
 }
-get discountRate() {return this._discountRate;}
-_setDiscountRate(aNumber) {this._discountRate = aNumber;}
+get discountRate() {
+    return this._discountRate
+}
+_setDiscountRate(aNumber) {
+    this._discountRate = aNumber
+}
 becomePreferred() {
- this._setDiscountRate(this.discountRate + 0.03);
- // other nice things
+    this._setDiscountRate(this.discountRate + 0.03)
+    // other nice things
 }
-applyDiscount(amount)  {
- return amount.subtract(amount.multiply(this.discountRate));
+applyDiscount(amount) {
+    return amount.subtract(amount.multiply(this.discountRate))
 }
 ```
 
@@ -502,12 +499,16 @@ applyDiscount(amount)  {
 #### class CustomerContract...
 
 ```js
-  constructor(startDate, discountRate) {
- this._startDate = startDate;
- this._discountRate = discountRate;
+constructor(startDate, discountRate) {
+    this._startDate = startDate
+    this._discountRate = discountRate
 }
-get discountRate()  {return this._discountRate;}
-set discountRate(arg) {this._discountRate = arg;}
+get discountRate() {
+    return this._discountRate
+}
+set discountRate(arg) {
+    this._discountRate = arg
+}
 ```
 
 接下来，我可以修改 customer 对象的访问函数，让它引用 CustomerContract 这个新添的字段。不过当我这么干时，我收到了一个错误：“Cannot set property 'discountRate' of undefined”。这是因为我们先调用了 `_setDiscountRate` 函数，而此时 CustomerContract 对象尚未创建出来。为了修复这个错误，我得先撤销刚刚的代码，回到上一个可工作的状态，然后再应用移动语句（223）手法，将`_setDiscountRate` 函数调用语句挪动到创建对象的语句之后。
@@ -515,10 +516,10 @@ set discountRate(arg) {this._discountRate = arg;}
 #### class Customer...
 
 ```js
-  constructor(name, discountRate) {
-  this._name = name;
-  this._setDiscountRate(discountRate);
-  this._contract = new CustomerContract(dateToday());
+constructor(name, discountRate) {
+    this._name = name
+    this._setDiscountRate(discountRate)
+    this._contract = new CustomerContract(dateToday())
 }
 ```
 
@@ -527,8 +528,12 @@ set discountRate(arg) {this._discountRate = arg;}
 #### class Customer...
 
 ```js
-  get discountRate() {return this._contract.discountRate;}
-_setDiscountRate(aNumber) {this._contract.discountRate = aNumber;}
+get discountRate() {
+    return this._contract.discountRate
+}
+_setDiscountRate(aNumber) {
+    this._contract.discountRate = aNumber
+}
 ```
 
 在 JavaScript 中，使用类的字段无须事先声明，因此替换完访问函数，实际上已经没有其他字段再需要我删除。
@@ -547,18 +552,20 @@ _setDiscountRate(aNumber) {this._contract.discountRate = aNumber;}
 
 ```js
 constructor(number, type, interestRate) {
- this._number = number;
- this._type = type;
- this._interestRate = interestRate;
+    this._number = number
+    this._type = type
+    this._interestRate = interestRate
 }
-get interestRate() {return this._interestRate;}
+get interestRate() {
+    return this._interestRate
+}
 ```
 
 #### class AccountType...
 
 ```js
 constructor(nameString) {
-  this._name = nameString;
+    this._name = nameString;
 }
 ```
 
@@ -570,10 +577,12 @@ constructor(nameString) {
 
 ```js
 constructor(nameString, interestRate) {
-  this._name = nameString;
-  this._interestRate = interestRate;
+    this._name = nameString
+    this._interestRate = interestRate
 }
-get interestRate() {return this._interestRate;}
+get interestRate() {
+    return this._interestRate
+}
 ```
 
 接着我应该着手替换 Account 类的访问函数，但我发现直接替换可能有个潜藏的问题。在重构之前，每个账户都自己维护一份利率数据，而现在我要让所有相同类型的账户共享同一个利率值。如果当前类型相同的账户确实拥有相同的利率，那么这次重构就能成立，因为这不会引起可观测的行为变化。但只要存在一个特例，即同一类型的账户可能有不同的利率值，那么这样的修改就不叫重构了，因为它会改变系统的可观测行为。倘若账户的数据保存在数据库中，那我就应该检查一下数据库，确保同一类型的账户都拥有与其账户类型匹配的利率值。同时，我还可以在 Account 类引入断言（302），确保出现异常的利率数据时能够及时发现。
@@ -582,12 +591,14 @@ get interestRate() {return this._interestRate;}
 
 ```js
 constructor(number, type, interestRate) {
-  this._number = number;
-  this._type = type;
-  assert(interestRate === this._type.interestRate);
-  this._interestRate = interestRate;
+    this._number = number
+    this._type = type
+    assert(interestRate === this._type.interestRate)
+    this._interestRate = interestRate
 }
-get interestRate() {return this._interestRate;}
+get interestRate() {
+    return this._interestRate
+}
 ```
 
 我会保留这条断言，让系统先运行一段时间，看看是否会在这捕获到错误。或者，除了添加断言，我还可以将错误记录到日志里。一段时间后，一旦我对代码变得更加自信，确定它确实没有引起行为变化后，我就可以让 Account 直接访问 AccountType 上的 interestRate 字段，并将原来的字段完全删除了。
@@ -596,10 +607,12 @@ get interestRate() {return this._interestRate;}
 
 ```js
 constructor(number, type) {
-  this._number = number;
-  this._type = type;
+    this._number = number
+    this._type = type
 }
-get interestRate() {return this._type.interestRate;}
+get interestRate() {
+    return this._type.interestRate
+}
 ```
 
 ## 8.3 搬移语句到函数（Move Statements into Function）
@@ -607,24 +620,21 @@ get interestRate() {return this._type.interestRate;}
 反向重构：搬移语句到调用者（217）
 
 ```js
-result.push(`<p>title: ${person.photo.title}</p>`);
-result.concat(photoData(person.photo));
+result.push(`<p>title: ${person.photo.title}</p>`)
+result.concat(photoData(person.photo))
 
 function photoData(aPhoto) {
-  return [
-    `<p>location: ${aPhoto.location}</p>`,
-    `<p>date: ${aPhoto.date.toDateString()}</p>`,
-  ];
+    return [`<p>location: ${aPhoto.location}</p>`, `<p>date: ${aPhoto.date.toDateString()}</p>`]
 }
 
-result.concat(photoData(person.photo));
+result.concat(photoData(person.photo))
 
 function photoData(aPhoto) {
-  return [
-    `<p>title: ${aPhoto.title}</p>`,
-    `<p>location: ${aPhoto.location}</p>`,
-    `<p>date: ${aPhoto.date.toDateString()}</p>`,
-  ];
+    return [
+        `<p>title: ${aPhoto.title}</p>`,
+        `<p>location: ${aPhoto.location}</p>`,
+        `<p>date: ${aPhoto.date.toDateString()}</p>`
+    ]
 }
 ```
 
@@ -656,27 +666,22 @@ function photoData(aPhoto) {
 
 ```js
 function renderPerson(outStream, person) {
-  const result = [];
-  result.push(`<p>${person.name}</p>`);
-  result.push(renderPhoto(person.photo));
-  result.push(`<p>title: ${person.photo.title}</p>`);
-  result.push(emitPhotoData(person.photo));
-  return result.join("\n");
+    const result = []
+    result.push(`<p>${person.name}</p>`)
+    result.push(renderPhoto(person.photo))
+    result.push(`<p>title: ${person.photo.title}</p>`)
+    result.push(emitPhotoData(person.photo))
+    return result.join("\n")
 }
 function photoDiv(p) {
-  return [
-    "<div>",
-    `<p>title:  ${p.title}</p>`,
-    emitPhotoData(p),
-    "</div>",
-  ].join("\n");
+    return ["<div>", `<p>title:  ${p.title}</p>`, emitPhotoData(p), "</div>"].join("\n")
 }
 
 function emitPhotoData(aPhoto) {
-  const result = [];
-  result.push(`<p>location: ${aPhoto.location}</p>`);
-  result.push(`<p>date: ${aPhoto.date.toDateString()}</p>`);
-  return result.join("\n");
+    const result = []
+    result.push(`<p>location: ${aPhoto.location}</p>`)
+    result.push(`<p>date: ${aPhoto.date.toDateString()}</p>`)
+    return result.join("\n")
 }
 ```
 
@@ -686,11 +691,11 @@ function emitPhotoData(aPhoto) {
 
 ```js
 function photoDiv(p) {
-  return ["<div>", zznew(p), "</div>"].join("\n");
+    return ["<div>", zznew(p), "</div>"].join("\n")
 }
 
 function zznew(p) {
-  return [`<p>title: ${p.title}</p>`, emitPhotoData(p)].join("\n");
+    return [`<p>title: ${p.title}</p>`, emitPhotoData(p)].join("\n")
 }
 ```
 
@@ -698,11 +703,11 @@ function zznew(p) {
 
 ```js
 function renderPerson(outStream, person) {
-  const result = [];
-  result.push(`<p>${person.name}</p>`);
-  result.push(renderPhoto(person.photo));
-  result.push(zznew(person.photo));
-  return result.join("\n");
+    const result = []
+    result.push(`<p>${person.name}</p>`)
+    result.push(renderPhoto(person.photo))
+    result.push(zznew(person.photo))
+    return result.join("\n")
 }
 ```
 
@@ -710,11 +715,9 @@ function renderPerson(outStream, person) {
 
 ```js
 function zznew(p) {
-  return [
-    `<p>title: ${p.title}</p>`,
-    `<p>location: ${p.location}</p>`,
-    `<p>date: ${p.date.toDateString()}</p>`,
-  ].join("\n");
+    return [`<p>title: ${p.title}</p>`, `<p>location: ${p.location}</p>`, `<p>date: ${p.date.toDateString()}</p>`].join(
+        "\n"
+    )
 }
 ```
 
@@ -722,23 +725,23 @@ function zznew(p) {
 
 ```js
 function renderPerson(outStream, person) {
-  const result = [];
-  result.push(`<p>${person.name}</p>`);
-  result.push(renderPhoto(person.photo));
-  result.push(emitPhotoData(person.photo));
-  return result.join("\n");
+    const result = []
+    result.push(`<p>${person.name}</p>`)
+    result.push(renderPhoto(person.photo))
+    result.push(emitPhotoData(person.photo))
+    return result.join("\n")
 }
 
 function photoDiv(aPhoto) {
-  return ["<div>", emitPhotoData(aPhoto), "</div>"].join("\n");
+    return ["<div>", emitPhotoData(aPhoto), "</div>"].join("\n")
 }
 
 function emitPhotoData(aPhoto) {
-  return [
-    `<p>title: ${aPhoto.title}</p>`,
-    `<p>location: ${aPhoto.location}</p>`,
-    `<p>date: ${aPhoto.date.toDateString()}</p>`,
-  ].join("\n");
+    return [
+        `<p>title: ${aPhoto.title}</p>`,
+        `<p>location: ${aPhoto.location}</p>`,
+        `<p>date: ${aPhoto.date.toDateString()}</p>`
+    ].join("\n")
 }
 ```
 
@@ -749,18 +752,18 @@ function emitPhotoData(aPhoto) {
 反向重构：搬移语句到函数（213）
 
 ```js
-emitPhotoData(outStream, person.photo);
+emitPhotoData(outStream, person.photo)
 
 function emitPhotoData(outStream, photo) {
-  outStream.write(`<p>title: ${photo.title}</p>\n`);
-  outStream.write(`<p>location: ${photo.location}</p>\n`);
+    outStream.write(`<p>title: ${photo.title}</p>\n`)
+    outStream.write(`<p>location: ${photo.location}</p>\n`)
 }
 
-emitPhotoData(outStream, person.photo);
-outStream.write(`<p>location: ${person.photo.location}</p>\n`);
+emitPhotoData(outStream, person.photo)
+outStream.write(`<p>location: ${person.photo.location}</p>\n`)
 
 function emitPhotoData(outStream, photo) {
-  outStream.write(`<p>title: ${photo.title}</p>\n`);
+    outStream.write(`<p>title: ${photo.title}</p>\n`)
 }
 ```
 
@@ -791,26 +794,26 @@ function emitPhotoData(outStream, photo) {
 下面这个例子比较简单：emitPhotoData 是一个函数，在两处地方被调用。
 
 ```js
-  function renderPerson(outStream, person) {
- outStream.write(`<p>${person.name}</p>\n`);
- renderPhoto(outStream, person.photo);
- emitPhotoData(outStream, person.photo);
+function renderPerson(outStream, person) {
+    outStream.write(`<p>${person.name}</p>\n`)
+    renderPhoto(outStream, person.photo)
+    emitPhotoData(outStream, person.photo)
 }
 
 function listRecentPhotos(outStream, photos) {
- photos
-  .filter(p => p.date > recentDateCutoff())
-  .forEach(p => {
-   outStream.write("<div>\n");
-   emitPhotoData(outStream, p);
-   outStream.write("</div>\n");
-  });
+    photos
+        .filter((p) => p.date > recentDateCutoff())
+        .forEach((p) => {
+            outStream.write("<div>\n")
+            emitPhotoData(outStream, p)
+            outStream.write("</div>\n")
+        })
 }
 
 function emitPhotoData(outStream, photo) {
- outStream.write(`<p>title: ${photo.title}</p>\n`);
- outStream.write(`<p>date: ${photo.date.toDateString()}</p>\n`);
- outStream.write(`<p>location: ${photo.location}</p>\n`);
+    outStream.write(`<p>title: ${photo.title}</p>\n`)
+    outStream.write(`<p>date: ${photo.date.toDateString()}</p>\n`)
+    outStream.write(`<p>location: ${photo.location}</p>\n`)
 }
 ```
 
@@ -821,30 +824,30 @@ function emitPhotoData(outStream, photo) {
 重构的第一步是先用提炼函数（106），将那些最终希望留在 emitPhotoData 函数里的语句先提炼出去。
 
 ```js
-  function renderPerson(outStream, person) {
- outStream.write(`<p>${person.name}</p>\n`);
- renderPhoto(outStream, person.photo);
- emitPhotoData(outStream, person.photo);
+function renderPerson(outStream, person) {
+    outStream.write(`<p>${person.name}</p>\n`)
+    renderPhoto(outStream, person.photo)
+    emitPhotoData(outStream, person.photo)
 }
 
 function listRecentPhotos(outStream, photos) {
- photos
-  .filter(p => p.date > recentDateCutoff())
-  .forEach(p => {
-   outStream.write("<div>\n");
-   emitPhotoData(outStream, p);
-   outStream.write("</div>\n");
-  });
+    photos
+        .filter((p) => p.date > recentDateCutoff())
+        .forEach((p) => {
+            outStream.write("<div>\n")
+            emitPhotoData(outStream, p)
+            outStream.write("</div>\n")
+        })
 }
 
-function  emitPhotoData(outStream, photo) {
- zztmp(outStream,  photo);
- outStream.write(`<p>location: ${photo.location}</p>\n`);
+function emitPhotoData(outStream, photo) {
+    zztmp(outStream, photo)
+    outStream.write(`<p>location: ${photo.location}</p>\n`)
 }
 
 function zztmp(outStream, photo) {
- outStream.write(`<p>title: ${photo.title}</p>\n`);
- outStream.write(`<p>date: ${photo.date.toDateString()}</p>\n`);
+    outStream.write(`<p>title: ${photo.title}</p>\n`)
+    outStream.write(`<p>date: ${photo.date.toDateString()}</p>\n`)
 }
 ```
 
@@ -853,62 +856,62 @@ function zztmp(outStream, photo) {
 接下来，我要对 emitPhotoData 的调用点逐一应用内联函数（115）。先从 renderPerson 函数开始。
 
 ```js
-  function renderPerson(outStream, person) {
- outStream.write(`<p>${person.name}</p>\n`);
- renderPhoto(outStream, person.photo);
- zztmp(outStream,  person.photo);
- outStream.write(`<p>location: ${person.photo.location}</p>\n`);
+function renderPerson(outStream, person) {
+    outStream.write(`<p>${person.name}</p>\n`)
+    renderPhoto(outStream, person.photo)
+    zztmp(outStream, person.photo)
+    outStream.write(`<p>location: ${person.photo.location}</p>\n`)
 }
 function listRecentPhotos(outStream, photos) {
- photos
-  .filter(p => p.date > recentDateCutoff())
-  .forEach(p => {
-   outStream.write("<div>\n");
-   emitPhotoData(outStream, p);
-   outStream.write("</div>\n");
-  });
+    photos
+        .filter((p) => p.date > recentDateCutoff())
+        .forEach((p) => {
+            outStream.write("<div>\n")
+            emitPhotoData(outStream, p)
+            outStream.write("</div>\n")
+        })
 }
 
 function emitPhotoData(outStream, photo) {
- zztmp(outStream, photo);
- outStream.write(`<p>location: ${photo.location}</p>\n`);
+    zztmp(outStream, photo)
+    outStream.write(`<p>location: ${photo.location}</p>\n`)
 }
 
 function zztmp(outStream, photo) {
- outStream.write(`<p>title: ${photo.title}</p>\n`);
- outStream.write(`<p>date: ${photo.date.toDateString()}</p>\n`);
+    outStream.write(`<p>title: ${photo.title}</p>\n`)
+    outStream.write(`<p>date: ${photo.date.toDateString()}</p>\n`)
 }
 ```
 
 然后再次运行测试，确保这次函数内联能正常工作。测试通过后，再前往下一个调用点。
 
 ```js
-  function renderPerson(outStream, person) {
- outStream.write(`<p>${person.name}</p>\n`);
- renderPhoto(outStream, person.photo);
- zztmp(outStream,  person.photo);
- outStream.write(`<p>location: ${person.photo.location}</p>\n`);
+function renderPerson(outStream, person) {
+    outStream.write(`<p>${person.name}</p>\n`)
+    renderPhoto(outStream, person.photo)
+    zztmp(outStream, person.photo)
+    outStream.write(`<p>location: ${person.photo.location}</p>\n`)
 }
 
 function listRecentPhotos(outStream, photos) {
- photos
-  .filter(p => p.date > recentDateCutoff())
-  .forEach(p => {
-   outStream.write("<div>\n");
-   zztmp(outStream, p);
-   outStream.write(`<p>location: ${p.location}</p>\n`);
-   outStream.write("</div>\n");
-  });
+    photos
+        .filter((p) => p.date > recentDateCutoff())
+        .forEach((p) => {
+            outStream.write("<div>\n")
+            zztmp(outStream, p)
+            outStream.write(`<p>location: ${p.location}</p>\n`)
+            outStream.write("</div>\n")
+        })
 }
 
 function emitPhotoData(outStream, photo) {
- zztmp(outStream, photo);
- outStream.write(`<p>location: ${photo.location}</p>\n`);
+    zztmp(outStream, photo)
+    outStream.write(`<p>location: ${photo.location}</p>\n`)
 }
 
 function zztmp(outStream, photo) {
- outStream.write(`<p>title: ${photo.title}</p>\n`);
- outStream.write(`<p>date: ${photo.date.toDateString()}</p>\n`);
+    outStream.write(`<p>title: ${photo.title}</p>\n`)
+    outStream.write(`<p>date: ${photo.date.toDateString()}</p>\n`)
 }
 ```
 
@@ -916,31 +919,31 @@ function zztmp(outStream, photo) {
 
 ```js
 function renderPerson(outStream, person) {
- outStream.write(`<p>${person.name}</p>\n`);
- renderPhoto(outStream, person.photo);
- zztmp(outStream,  person.photo);
- outStream.write(`<p>location: ${person.photo.location}</p>\n`);
+    outStream.write(`<p>${person.name}</p>\n`)
+    renderPhoto(outStream, person.photo)
+    zztmp(outStream, person.photo)
+    outStream.write(`<p>location: ${person.photo.location}</p>\n`)
 }
 
 function listRecentPhotos(outStream, photos) {
- photos
-  .filter(p => p.date > recentDateCutoff())
-  .forEach(p => {
-   outStream.write("<div>\n");
-   zztmp(outStream, p);
-   outStream.write(`<p>location: ${p.location}</p>\n`);
-   outStream.write("</div>\n");
-  });
+    photos
+        .filter((p) => p.date > recentDateCutoff())
+        .forEach((p) => {
+            outStream.write("<div>\n")
+            zztmp(outStream, p)
+            outStream.write(`<p>location: ${p.location}</p>\n`)
+            outStream.write("</div>\n")
+        })
 }
 
 function emitPhotoData(outStream, photo) {
- zztmp(outStream, photo);
- outStream.write(`<p>location: ${photo.location}</p>\n`);
+    zztmp(outStream, photo)
+    outStream.write(`<p>location: ${photo.location}</p>\n`)
 }
 
 function zztmp(outStream, photo) {
- outStream.write(`<p>title: ${photo.title}</p>\n`);
- outStream.write(`<p>date: ${photo.date.toDateString()}</p>\n`);
+    outStream.write(`<p>title: ${photo.title}</p>\n`)
+    outStream.write(`<p>date: ${photo.date.toDateString()}</p>\n`)
 }
 ```
 
@@ -948,38 +951,38 @@ function zztmp(outStream, photo) {
 
 ```js
 function renderPerson(outStream, person) {
- outStream.write(`<p>${person.name}</p>\n`);
- renderPhoto(outStream, person.photo);
- emitPhotoData(outStream, person.photo);
- outStream.write(`<p>location: ${person.photo.location}</p>\n`);
+    outStream.write(`<p>${person.name}</p>\n`)
+    renderPhoto(outStream, person.photo)
+    emitPhotoData(outStream, person.photo)
+    outStream.write(`<p>location: ${person.photo.location}</p>\n`)
 }
 
 function listRecentPhotos(outStream, photos) {
- photos
-  .filter(p => p.date > recentDateCutoff())
-  .forEach(p => {
-   outStream.write("<div>\n");
-   emitPhotoData(outStream, p);
-   outStream.write(`<p>location: ${p.location}</p>\n`);
-   outStream.write("</div>\n");
-  });
+    photos
+        .filter((p) => p.date > recentDateCutoff())
+        .forEach((p) => {
+            outStream.write("<div>\n")
+            emitPhotoData(outStream, p)
+            outStream.write(`<p>location: ${p.location}</p>\n`)
+            outStream.write("</div>\n")
+        })
 }
 
 function emitPhotoData(outStream, photo) {
- outStream.write(`<p>title: ${photo.title}</p>\n`);
- outStream.write(`<p>date: ${photo.date.toDateString()}</p>\n`);
+    outStream.write(`<p>title: ${photo.title}</p>\n`)
+    outStream.write(`<p>date: ${photo.date.toDateString()}</p>\n`)
 }
 ```
 
 ## 8.5 以函数调用取代内联代码（Replace Inline Code with Function Call）
 
 ```js
-let appliesToMass = false;
+let appliesToMass = false
 for (const s of states) {
-  if (s === "MA") appliesToMass = true;
+    if (s === "MA") appliesToMass = true
 }
 
-appliesToMass = states.includes("MA");
+appliesToMass = states.includes("MA")
 ```
 
 ### 动机
@@ -1001,15 +1004,15 @@ appliesToMass = states.includes("MA");
 曾用名：合并重复的代码片段（Consolidate Duplicate Conditional Fragments）
 
 ```js
-const pricingPlan = retrievePricingPlan();
-const order = retreiveOrder();
-let charge;
-const chargePerUnit = pricingPlan.unit;
+const pricingPlan = retrievePricingPlan()
+const order = retreiveOrder()
+let charge
+const chargePerUnit = pricingPlan.unit
 
-const pricingPlan = retrievePricingPlan();
-const chargePerUnit = pricingPlan.unit;
-const order = retreiveOrder();
-let charge;
+const pricingPlan = retrievePricingPlan()
+const chargePerUnit = pricingPlan.unit
+const order = retreiveOrder()
+let charge
 ```
 
 ### 动机
@@ -1067,8 +1070,8 @@ let charge;
 移动代码时，最容易遵守的一条规则是，如果待移动代码片段中引用的变量在另一个代码片段中被修改了，那我就不能安全地将前者移动到后者之后；同样，如果前者会修改后者中引用的变量，也一样不能安全地进行上述移动。但这条规则仅仅作为参考，它也不是绝对的，比如下面这个例子，虽然两个语句都修改了彼此之间的变量，但我仍能安全地调整它们的先后顺序。
 
 ```js
-a = a + 10;
-a = a + 5;
+a = a + 10
+a = a + 5
 ```
 
 但无论如何，要判断一次语句移动是否安全，都意味着我得真正理解代码的工作原理，以及运算符之间的组合方式等。
@@ -1086,28 +1089,28 @@ a = a + 5;
 在下面这个例子中，两个条件分支里都有一个相同的语句：
 
 ```js
-let result;
+let result
 if (availableResources.length === 0) {
-  result = createResource();
-  allocatedResources.push(result);
+    result = createResource()
+    allocatedResources.push(result)
 } else {
-  result = availableResources.pop();
-  allocatedResources.push(result);
+    result = availableResources.pop()
+    allocatedResources.push(result)
 }
-return result;
+return result
 ```
 
 我可以将这两句重复代码从条件分支中移走，只在 if-else 块的末尾保留一句。
 
 ```js
-let result;
+let result
 if (availableResources.length === 0) {
-  result = createResource();
+    result = createResource()
 } else {
-  result = availableResources.pop();
+    result = availableResources.pop()
 }
-allocatedResources.push(result);
-return result;
+allocatedResources.push(result)
+return result
 ```
 
 这个手法同样可以反过来用，也就是把一个语句分别搬移到不同的条件分支里，这样会在每个条件分支里留下同一段重复的代码。
@@ -1121,24 +1124,24 @@ return result;
 ## 8.7 拆分循环（Split Loop）
 
 ```js
-let averageAge = 0;
-let totalSalary = 0;
+let averageAge = 0
+let totalSalary = 0
 for (const p of people) {
-  averageAge += p.age;
-  totalSalary += p.salary;
+    averageAge += p.age
+    totalSalary += p.salary
 }
-averageAge = averageAge / people.length;
+averageAge = averageAge / people.length
 
-let totalSalary = 0;
+let totalSalary = 0
 for (const p of people) {
-  totalSalary += p.salary;
+    totalSalary += p.salary
 }
 
-let averageAge = 0;
+let averageAge = 0
 for (const p of people) {
-  averageAge += p.age;
+    averageAge += p.age
 }
-averageAge = averageAge / people.length;
+averageAge = averageAge / people.length
 ```
 
 ### 动机
@@ -1164,116 +1167,111 @@ averageAge = averageAge / people.length;
 下面我以一段循环代码开始。该循环会计算需要支付给所有员工的总薪水（total salary），并计算出最年轻（youngest）员工的年龄。
 
 ```js
-let youngest = people[0] ? people[0].age : Infinity;
-let totalSalary = 0;
+let youngest = people[0] ? people[0].age : Infinity
+let totalSalary = 0
 for (const p of people) {
- if (p.age < youngest) youngest = p.age;
- totalSalary += p.salary;
+    if (p.age < youngest) youngest = p.age
+    totalSalary += p.salary
 }
 
-return `youngestAge: ${youngest}, totalSalary: ${totalSalary}`;
+return `youngestAge: ${youngest}, totalSalary: ${totalSalary}`
 ```
 
 该循环十分简单，但仍然做了两种不同的计算。要拆分这两种计算，我要先复制一遍循环代码。
 
 ```js
-let youngest = people[0] ? people[0].age : Infinity;
-let totalSalary = 0;
+let youngest = people[0] ? people[0].age : Infinity
+let totalSalary = 0
 for (const p of people) {
- if (p.age < youngest) youngest = p.age;
- totalSalary += p.salary;
+    if (p.age < youngest) youngest = p.age
+    totalSalary += p.salary
 }
 for (const p of people) {
- if (p.age < youngest) youngest = p.age;
- totalSalary += p.salary;
+    if (p.age < youngest) youngest = p.age
+    totalSalary += p.salary
 }
 
-return `youngestAge: ${youngest}, totalSalary: ${totalSalary}`;
+return `youngestAge: ${youngest}, totalSalary: ${totalSalary}`
 ```
 
 复制过后，我需要将循环中重复的计算逻辑删除，否则就会累加出错误的结果。如果循环中的代码没有副作用，那便可以先留着它们不删除，可惜上述例子并不符合这种情况。
 
 ```js
-let youngest = people[0] ? people[0].age : Infinity;
-let totalSalary = 0;
+let youngest = people[0] ? people[0].age : Infinity
+let totalSalary = 0
 for (const p of people) {
- if (p.age < youngest) youngest = p.age;
- totalSalary += p.salary;
+    if (p.age < youngest) youngest = p.age
+    totalSalary += p.salary
 }
 
 for (const p of people) {
- if (p.age < youngest) youngest = p.age;
- totalSalary += p.salary;
+    if (p.age < youngest) youngest = p.age
+    totalSalary += p.salary
 }
 
-return `youngestAge: ${youngest}, totalSalary: ${totalSalary}`;
+return `youngestAge: ${youngest}, totalSalary: ${totalSalary}`
 ```
 
 至此，拆分循环这个手法本身的内容就结束了。但本手法的意义不仅在于拆分出循环本身，而且在于它为进一步优化提供了良好的起点——下一步我通常会寻求将每个循环提炼到独立的函数中。在做提炼之前，我得先用移动语句（223）微调一下代码顺序，将与循环相关的变量先搬移到一起：
 
 ```js
-let totalSalary = 0;
+let totalSalary = 0
 for (const p of people) {
- totalSalary += p.salary;
+    totalSalary += p.salary
 }
 
-let youngest = people[0] ? people[0].age : Infinity;
+let youngest = people[0] ? people[0].age : Infinity
 for (const p of people) {
- if (p.age < youngest) youngest = p.age;
+    if (p.age < youngest) youngest = p.age
 }
 
-return `youngestAge: ${youngest}, totalSalary: ${totalSalary}`;
+return `youngestAge: ${youngest}, totalSalary: ${totalSalary}`
 ```
 
 然后，我就可以顺利地应用提炼函数（106）了。
 
 ```js
-  return `youngestAge: ${youngestAge()}, totalSalary: ${totalSalary()}`;
+return `youngestAge: ${youngestAge()}, totalSalary: ${totalSalary()}`
 
 function totalSalary() {
- let totalSalary = 0;
- for (const p of people) {
-  totalSalary += p.salary;
- }
- return totalSalary;
+    let totalSalary = 0
+    for (const p of people) {
+        totalSalary += p.salary
+    }
+    return totalSalary
 }
 
 function youngestAge() {
- let youngest = people[0] ? people[0].age : Infinity;
- for (const p of people) {
-  if (p.age < youngest) youngest = p.age;
- }
- return youngest;
+    let youngest = people[0] ? people[0].age : Infinity
+    for (const p of people) {
+        if (p.age < youngest) youngest = p.age
+    }
+    return youngest
 }
 ```
 
 对于像 totalSalary 这样的累加计算，我绝少能抵挡得住进一步使用以管道取代循环（231）重构它的诱惑；而对于 youngestAge 的计算，显然可以用替换算法（195）替之以更好的算法。
 
 ```js
-  return `youngestAge: ${youngestAge()}, totalSalary: ${totalSalary()}`;
+return `youngestAge: ${youngestAge()}, totalSalary: ${totalSalary()}`
 
 function totalSalary() {
- return people.reduce((total,p) => total + p.salary, 0);
+    return people.reduce((total, p) => total + p.salary, 0)
 }
 function youngestAge() {
- return Math.min(...people.map(p => p.age));
+    return Math.min(...people.map((p) => p.age))
 }
 ```
 
 ## 8.8 以管道取代循环（Replace Loop with Pipeline）
 
 ```js
-const names = [];
+const names = []
 for (const i of input) {
-  if (i.job === "programmer")
-    names.push(i.name);
+    if (i.job === "programmer") names.push(i.name)
 }
 
-
-const names = input
-  .filter(i => i.job === "programmer")
-  .map(i => i.name)
-;
+const names = input.filter((i) => i.job === "programmer").map((i) => i.name)
 ```
 
 ### 动机
@@ -1311,21 +1309,21 @@ Chennai, India, +91 44 660 44766
 
 ```js
 function acquireData(input) {
-  const lines = input.split("\n");
-  let firstLine = true;
-  const result = [];
-  for (const line of lines) {
-    if (firstLine) {
-      firstLine = false;
-      continue;
+    const lines = input.split("\n")
+    let firstLine = true
+    const result = []
+    for (const line of lines) {
+        if (firstLine) {
+            firstLine = false
+            continue
+        }
+        if (line.trim() === "") continue
+        const record = line.split(",")
+        if (record[1].trim() === "India") {
+            result.push({ city: record[0].trim(), phone: record[2].trim() })
+        }
     }
-    if (line.trim() === "") continue;
-    const record = line.split(",");
-    if (record[1].trim() === "India") {
-      result.push({ city: record[0].trim(), phone: record[2].trim() });
-    }
-  }
-  return result;
+    return result
 }
 ```
 
@@ -1335,22 +1333,22 @@ function acquireData(input) {
 
 ```js
 function acquireData(input) {
-  const lines = input.split("\n");
-  let firstLine = true;
-  const result = [];
-  const loopItems = lines;
-  for (const line of loopItems) {
-    if (firstLine) {
-      firstLine = false;
-      continue;
+    const lines = input.split("\n")
+    let firstLine = true
+    const result = []
+    const loopItems = lines
+    for (const line of loopItems) {
+        if (firstLine) {
+            firstLine = false
+            continue
+        }
+        if (line.trim() === "") continue
+        const record = line.split(",")
+        if (record[1].trim() === "India") {
+            result.push({ city: record[0].trim(), phone: record[2].trim() })
+        }
     }
-    if (line.trim() === "") continue;
-    const record = line.split(",");
-    if (record[1].trim() === "India") {
-      result.push({ city: record[0].trim(), phone: record[2].trim() });
-    }
-  }
-  return result;
+    return result
 }
 ```
 
@@ -1358,22 +1356,22 @@ function acquireData(input) {
 
 ```js
 function acquireData(input) {
-  const lines = input.split("\n");
-  let firstLine = true;
-  const result = [];
-  const loopItems = lines.slice(1);
-  for (const line of loopItems) {
-    if (firstLine) {
-      firstLine = false;
-      continue;
+    const lines = input.split("\n")
+    let firstLine = true
+    const result = []
+    const loopItems = lines.slice(1)
+    for (const line of loopItems) {
+        if (firstLine) {
+            firstLine = false
+            continue
+        }
+        if (line.trim() === "") continue
+        const record = line.split(",")
+        if (record[1].trim() === "India") {
+            result.push({ city: record[0].trim(), phone: record[2].trim() })
+        }
     }
-    if (line.trim() === "") continue;
-    const record = line.split(",");
-    if (record[1].trim() === "India") {
-      result.push({ city: record[0].trim(), phone: record[2].trim() });
-    }
-  }
-  return result;
+    return result
 }
 ```
 
@@ -1383,20 +1381,17 @@ function acquireData(input) {
 
 ```js
 function acquireData(input) {
- const lines = input.split("\n");
- const result = [];
- const loopItems = lines
-    .slice(1)
-    .filter(line => line.trim() !== "")
-    ;
- for (const line of loopItems) {
-  if (line.trim() === "") continue;
-  const  record = line.split(",");
-  if (record[1].trim() === "India") {
-   result.push({city: record[0].trim(), phone: record[2].trim()});
-  }
- }
- return result;
+    const lines = input.split("\n")
+    const result = []
+    const loopItems = lines.slice(1).filter((line) => line.trim() !== "")
+    for (const line of loopItems) {
+        if (line.trim() === "") continue
+        const record = line.split(",")
+        if (record[1].trim() === "India") {
+            result.push({ city: record[0].trim(), phone: record[2].trim() })
+        }
+    }
+    return result
 }
 ```
 
@@ -1406,20 +1401,19 @@ function acquireData(input) {
 
 ```js
 function acquireData(input) {
- const lines = input.split("\n");
- const result = [];
- const loopItems = lines
-    .slice(1)
-    .filter(line => line.trim() !== "")
-    .map(line => line.split(","))
-    ;
- for (const line of loopItems) {
-  const record = line;.split(",");
-  if (record[1].trim() === "India") {
-   result.push({city: record[0].trim(), phone: record[2].trim()});
-  }
- }
- return result;
+    const lines = input.split("\n")
+    const result = []
+    const loopItems = lines
+        .slice(1)
+        .filter((line) => line;.trim() !== "")
+        .map((line) => line.split(","))
+    for (const line of loopItems) {
+        const record = line;.split(",")
+        if (record[1].trim() === "India") {
+            result.push({ city: record[0].trim(), phone: record[2].trim() })
+        }
+    }
+    return result
 }
 ```
 
@@ -1427,42 +1421,40 @@ function acquireData(input) {
 
 ```js
 function acquireData(input) {
- const lines = input.split("\n");
- const result = [];
- const loopItems = lines
-    .slice(1)
-    .filter(line => line.trim() !== "")
-    .map(line => line.split(","))
-    .filter(record => record[1].trim() === "India")
-    ;
- for (const line of loopItems) {
-  const record = line;
-  if (record[1].trim() === "India") {
-   result.push({city: record[0].trim(), phone: record[2].trim()});
-  }
- }
- return result;
+    const lines = input.split("\n")
+    const result = []
+    const loopItems = lines
+        .slice(1)
+        .filter((line) => line.trim() !== "")
+        .map((line) => line.split(","))
+        .filter((record) => record[1].trim() === "India")
+    for (const line of loopItems) {
+        const record = line
+        if (record[1].trim() === "India") {
+            result.push({ city: record[0].trim(), phone: record[2].trim() })
+        }
+    }
+    return result
 }
 ```
 
 最后再把结果映射（map）成需要的记录格式：
 
 ```js
-  function acquireData(input) {
- const lines = input.split("\n");
- const result = [];
- const loopItems = lines
-    .slice(1)
-    .filter(line => line.trim() !== "")
-    .map(line => line.split(","))
-    .filter(record => record[1].trim() === "India")
-    .map(record => ({city: record[0].trim(), phone: record[2].trim()}))
-    ;
- for (const line of loopItems) {
-  const record = line;
-  result.push(line);
- }
- return result;
+function acquireData(input) {
+    const lines = input.split("\n")
+    const result = []
+    const loopItems = lines
+        .slice(1)
+        .filter((line) => line.trim() !== "")
+        .map((line) => line.split(","))
+        .filter((record) => record[1].trim() === "India")
+        .map((record) => ({ city: record[0].trim(), phone: record[2].trim() }))
+    for (const line of loopItems) {
+        const record = line
+        result.push(line)
+    }
+    return result
 }
 ```
 
@@ -1470,19 +1462,18 @@ function acquireData(input) {
 
 ```js
 function acquireData(input) {
- const lines = input.split("\n");
- const result = lines
-    .slice(1)
-    .filter(line => line.trim() !== "")
-    .map(line => line.split(","))
-    .filter(record => record[1].trim() === "India")
-    .map(record => ({city: record[0].trim(), phone: record[2].trim()}))
-    ;
- for (const line of loopItems) {
-  const record = line;
-  result.push(line);
- }
- return result;
+    const lines = input.split("\n")
+    const result = lines
+        .slice(1)
+        .filter((line) => line.trim() !== "")
+        .map((line) => line.split(","))
+        .filter((record) => record[1].trim() === "India")
+        .map((record) => ({ city: record[0].trim(), phone: record[2].trim() }))
+    for (const line of loopItems) {
+        const record = line
+        result.push(line)
+    }
+    return result
 }
 ```
 
@@ -1490,14 +1481,13 @@ function acquireData(input) {
 
 ```js
 function acquireData(input) {
- const lines = input.split("\n");
- return lines
-    .slice (1)
-    .filter (line => line.trim() !== "")
-    .map   (line => line.split(","))
-    .filter (fields => fields[1].trim() === "India")
-    .map   (fields => ({city: fields[0].trim(), phone: fields[2].trim()}))
-    ;
+    const lines = input.split("\n")
+    return lines
+        .slice(1)
+        .filter((line) => line.trim() !== "")
+        .map((line) => line.split(","))
+        .filter((fields) => fields[1].trim() === "India")
+        .map((fields) => ({ city: fields[0].trim(), phone: fields[2].trim() }))
 }
 ```
 
@@ -1511,7 +1501,7 @@ function acquireData(input) {
 
 ```js
 if (false) {
-  doSomethingThatUsedToMatter();
+    doSomethingThatUsedToMatter()
 }
 ```
 

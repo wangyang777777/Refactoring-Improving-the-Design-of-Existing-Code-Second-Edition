@@ -15,16 +15,14 @@
 从此，运行测试就像执行编译一样简单。于是，我每次编译时都会运行测试。不久之后，我注意到自己的开发效率大大提高。我意识到，这是因为我没有花太多时间去测试的缘故。如果我不小心引入一个可被现有测试捕捉到的 bug，那么只要运行测试，它就会向我报告这个 bug。由于代码原本是可以正常运行的，所以我知道这个 bug 必定是在前一次运行测试后修改代码引入的。由于我频繁地运行测试，每次测试都在不久之前，因此我知道 bug 的源头就是我刚刚写下的代码。因为代码量很少，我对它也记忆犹新，所以就能轻松找出 bug。从前需要一小时甚至更多时间才能找到的 bug，现在最多只要几分钟就找到了。之所以能够拥有如此强大的 bug 侦测能力，不仅仅是因为我的代码能够自测试，也得益于我频繁地运行它们。
 
 > **Tip**  
-确保所有测试都完全自动化，让它们检查自己的测试结果。
-
+> 确保所有测试都完全自动化，让它们检查自己的测试结果。
 
 注意到这一点后，我对测试的积极性更高了。我不再等待每次迭代结尾时再增加测试，而是只要写好一点功能，就立即添加它们。每天我都会添加一些新功能，同时也添加相应的测试。这样，我很少花超过几分钟的时间来追查回归错误。
 
 从我最早的试验开始到现在为止，编写和组织自动化测试的工具已经有了长足的发展。1997 年，Kent Beck 从瑞士飞往亚特兰大去参加当年的 OOPSLA 会议，在飞机上他与 Erich Gamma 结对，把他为 Smalltalk 撰写的测试框架移植到了 Java 上。由此诞生的 JUnit 框架在测试领域影响力非凡，也在不同的编程语言中催生了很多类似的工具[mf-xunit]。
 
 > **Tip**  
-一套测试就是一个强大的 bug 侦测器，能够大大缩减查找 bug 所需的时间。
-
+> 一套测试就是一个强大的 bug 侦测器，能够大大缩减查找 bug 所需的时间。
 
 我得承认，说服别人也这么做并不容易。编写测试程序，意味着要写很多额外的代码。除非你确实体会到这种方法是如何提升编程速度的，否则自测试似乎就没什么意义。很多人根本没学过如何编写测试程序，甚至根本没考虑过测试，这对于编写自测试也很不利。如果测试需要手动运行，那的确是令人烦闷。但是，如果测试可以自动运行，编写测试代码就会真的很有趣。
 
@@ -54,16 +52,16 @@ Kent Beck 将这种先写测试的习惯提炼成一门技艺，叫测试驱动�
 
 ```js
 constructor(doc) {
- this._name = doc.name;
- this._producers = [];
- this._totalProduction = 0;
- this._demand = doc.demand;
- this._price = doc.price;
- doc.producers.forEach(d => this.addProducer(new Producer(this, d)));
+    this._name = doc.name
+    this._producers = []
+    this._totalProduction = 0
+    this._demand = doc.demand
+    this._price = doc.price
+    doc.producers.forEach((d) => this.addProducer(new Producer(this, d)))
 }
 addProducer(arg) {
- this._producers.push(arg);
- this._totalProduction += arg.production;
+    this._producers.push(arg)
+    this._totalProduction += arg.production
 }
 ```
 
@@ -73,16 +71,16 @@ addProducer(arg) {
 
 ```js
 function sampleProvinceData() {
-  return {
-    name: "Asia",
-    producers: [
-      { name: "Byzantium", cost: 10, production: 9 },
-      { name: "Attalia", cost: 12, production: 10 },
-      { name: "Sinope", cost: 10, production: 6 },
-    ],
-    demand: 30,
-    price: 20,
-  };
+    return {
+        name: "Asia",
+        producers: [
+            { name: "Byzantium", cost: 10, production: 9 },
+            { name: "Attalia", cost: 12, production: 10 },
+            { name: "Sinope", cost: 10, production: 6 }
+        ],
+        demand: 30,
+        price: 20
+    }
 }
 ```
 
@@ -91,14 +89,30 @@ function sampleProvinceData() {
 #### class Province...
 
 ```js
-get name()    {return this._name;}
-get producers() {return this._producers.slice();}
-get totalProduction()    {return this._totalProduction;}
-set totalProduction(arg) {this._totalProduction = arg;}
-get demand()    {return this._demand;}
-set demand(arg) {this._demand = parseInt(arg);}
-get price()    {return this._price;}
-set price(arg) {this._price = parseInt(arg);}
+get name() {
+    return this._name
+}
+get producers() {
+    return this._producers.slice()
+}
+get totalProduction() {
+    return this._totalProduction
+}
+set totalProduction(arg) {
+    this._totalProduction = arg
+}
+get demand() {
+    return this._demand
+}
+set demand(arg) {
+    this._demand = parseInt(arg)
+}
+get price() {
+    return this._price
+}
+set price(arg) {
+    this._price = parseInt(arg)
+}
 ```
 
 设值函数会被 UI 端调用，接收一个包含数值的字符串。我需要将它们转换成数值，以便在后续的计算中使用。
@@ -109,21 +123,29 @@ set price(arg) {this._price = parseInt(arg);}
 
 ```js
 constructor(aProvince, data) {
- this._province = aProvince;
- this._cost = data.cost;
- this._name = data.name;
- this._production = data.production || 0;
+    this._province = aProvince
+    this._cost = data.cost
+    this._name = data.name
+    this._production = data.production || 0
 }
-get name() {return this._name;}
-get cost() {return this._cost;}
-set cost(arg) {this._cost = parseInt(arg);}
+get name() {
+    return this._name
+}
+get cost() {
+    return this._cost
+}
+set cost(arg) {
+    this._cost = parseInt(arg)
+}
 
-get production() {return this._production;}
+get production() {
+    return this._production
+}
 set production(amountStr) {
- const amount = parseInt(amountStr);
- const newProduction = Number.isNaN(amount) ? 0 : amount;
- this._province.totalProduction += newProduction - this._production;
- this._production = newProduction;
+    const amount = parseInt(amountStr)
+    const newProduction = Number.isNaN(amount) ? 0 : amount
+    this._province.totalProduction += newProduction - this._production
+    this._production = newProduction
 }
 ```
 
@@ -135,7 +157,7 @@ set production(amountStr) {
 
 ```js
 get shortfall() {
- return this._demand - this.totalProduction;
+    return this._demand - this.totalProduction
 }
 ```
 
@@ -145,25 +167,25 @@ get shortfall() {
 
 ```js
 get profit() {
- return this.demandValue - this.demandCost;
+    return this.demandValue - this.demandCost
 }
 get demandCost() {
- let remainingDemand = this.demand;
- let result = 0;
- this.producers
-  .sort((a,b) => a.cost - b.cost)
-  .forEach(p => {
-   const contribution = Math.min(remainingDemand, p.production);
-    remainingDemand -= contribution;
-    result += contribution * p.cost;
-  });
- return result;
+    let remainingDemand = this.demand
+    let result = 0
+    this.producers
+        .sort((a, b) => a.cost - b.cost)
+        .forEach((p) => {
+            const contribution = Math.min(remainingDemand, p.production)
+            remainingDemand -= contribution
+            result += contribution * p.cost
+        })
+    return result
 }
 get demandValue() {
- return this.satisfiedDemand * this.price;
+    return this.satisfiedDemand * this.price
 }
 get satisfiedDemand() {
- return Math.min(this._demand, this.totalProduction);
+    return Math.min(this._demand, this.totalProduction)
 }
 ```
 
@@ -175,18 +197,17 @@ get satisfiedDemand() {
 
 ```js
 describe("province", function () {
-  it("shortfall", function () {
-    const asia = new Province(sampleProvinceData());
-    assert.equal(asia.shortfall, 5);
-  });
-});
+    it("shortfall", function () {
+        const asia = new Province(sampleProvinceData())
+        assert.equal(asia.shortfall, 5)
+    })
+})
 ```
 
 Mocha 框架组织测试代码的方式是将其分组，每一组下包含一套相关的测试。测试需要写在一个 it 块中。对于这个简单的例子，测试包含了两个步骤。第一步设置好一些测试夹具（fixture），也就是测试所需要的数据和对象等（就本例而言是一个加载好了的行省对象）；第二步则是验证测试夹具是否具备某些特征（就本例而言则是验证算出的缺额应该是期望的值）。
 
 > **Tip**  
-不同开发者在 describe 和 it 块里撰写的描述信息各有不同。有的人会写一个描述性的句子解释测试的内容，也有人什么都不写，认为所谓描述性的句子跟注释一样，不外乎是重复代码已经表达的东西。我个人不喜欢多写，只要测试失败时足以识别出对应的测试就够了。
-
+> 不同开发者在 describe 和 it 块里撰写的描述信息各有不同。有的人会写一个描述性的句子解释测试的内容，也有人什么都不写，认为所谓描述性的句子跟注释一样，不外乎是重复代码已经表达的东西。我个人不喜欢多写，只要测试失败时足以识别出对应的测试就够了。
 
 如果我在 NodeJS 的控制台下运行这个测试，那么其输出看起来是这样：
 
@@ -201,14 +222,13 @@ Mocha 框架组织测试代码的方式是将其分组，每一组下包含一�
 当我为类似的既有代码编写测试时，发现一切正常工作固然是好，但我天然持怀疑精神。特别是有很多测试在运行时，我总会担心测试没有按我期望的方式检查结果，从而没法在实际出错的时候抓到 bug。因此编写测试时，我想看到每个测试都至少失败一遍。我最爱的方式莫过于在代码中暂时引入一个错误，像这样：
 
 > **Tip**  
-总是确保测试不该通过时真的会失败。
-
+> 总是确保测试不该通过时真的会失败。
 
 #### class Province...
 
 ```js
 get shortfall() {
- return this._demand - this.totalProduction * 2;
+    return this._demand - this.totalProduction * 2
 }
 ```
 
@@ -230,29 +250,28 @@ at Context.<anonymous> (src/tester.js:10:12)
 一个真实的系统可能拥有数千个测试。好的测试框架应该能帮我简单快速地运行这些测试，一旦出错，我能马上看到。尽管这种反馈非常简单，但对自测试代码来说却尤为重要。工作时我会非常频繁地运行测试，要么是检验新代码的进展，要么是检查重构过程是否出错。
 
 > **Tip**  
-频繁地运行测试。对于你正在处理的代码，与其对应的测试至少每隔几分钟就要运行一次，每天至少运行一次所有的测试。
-
+> 频繁地运行测试。对于你正在处理的代码，与其对应的测试至少每隔几分钟就要运行一次，每天至少运行一次所有的测试。
 
 Mocha 框架允许使用不同的库（它称之为断言库）来验证测试的正确性。JavaScript 世界的断言库，连在一起都可以绕地球一周了，当你读到这里时，可能有些仍然还没过时。我现在使用的库是 Chai，它可以支持我编写不同类型的断言，比如“assert”风格的：
 
 ```js
 describe("province", function () {
-  it("shortfall", function () {
-    const asia = new Province(sampleProvinceData());
-    assert.equal(asia.shortfall, 5);
-  });
-});
+    it("shortfall", function () {
+        const asia = new Province(sampleProvinceData())
+        assert.equal(asia.shortfall, 5)
+    })
+})
 ```
 
 或者是“expect”风格的：
 
 ```js
 describe("province", function () {
-  it("shortfall", function () {
-    const asia = new Province(sampleProvinceData());
-    expect(asia.shortfall).equal(5);
-  });
-});
+    it("shortfall", function () {
+        const asia = new Province(sampleProvinceData())
+        expect(asia.shortfall).equal(5)
+    })
+})
 ```
 
 一般来讲我更倾向于使用 assert 风格的断言，但使用 JavaScript 时我倒是更常使用 expect 的风格。
@@ -270,20 +289,19 @@ describe("province", function () {
 接下来，我的目光落到了代码的另一个主要输出上，也就是总利润的计算。我同样可以在一开始的测试夹具上，对总利润做一个基本的测试。
 
 > **Tip**  
-编写未臻完善的测试并经常运行，好过对完美测试的无尽等待。
-
+> 编写未臻完善的测试并经常运行，好过对完美测试的无尽等待。
 
 ```js
 describe("province", function () {
-  it("shortfall", function () {
-    const asia = new Province(sampleProvinceData());
-    expect(asia.shortfall).equal(5);
-  });
-  it("profit", function () {
-    const asia = new Province(sampleProvinceData());
-    expect(asia.profit).equal(230);
-  });
-});
+    it("shortfall", function () {
+        const asia = new Province(sampleProvinceData())
+        expect(asia.shortfall).equal(5)
+    })
+    it("profit", function () {
+        const asia = new Province(sampleProvinceData())
+        expect(asia.profit).equal(230)
+    })
+})
 ```
 
 这是最终写出来的测试，但我是怎么写出它来的呢？首先我随便给测试的期望值写了一个数，然后运行测试，将程序产生的实际值（230）填回去。当然，我也可以自己手动计算，不过，既然现在的代码是能正常运行的，我就选择暂时相信它。测试可以正常工作后，我又故技重施，在利润的计算过程插入一个假的乘以 2 逻辑来破坏测试。如我所料，测试会失败，这时我才满意地将插入的假逻辑恢复过来。这个模式是我为既有代码添加测试时最常用的方法：先随便填写一个期望值，再用程序产生的真实值来替换它，然后引入一个错误，最后恢复错误。
@@ -292,31 +310,31 @@ describe("province", function () {
 
 ```js
 describe("province", function () {
-  const asia = new Province(sampleProvinceData()); // DON'T DO THIS
-  it("shortfall", function () {
-    expect(asia.shortfall).equal(5);
-  });
-  it("profit", function () {
-    expect(asia.profit).equal(230);
-  });
-});
+    const asia = new Province(sampleProvinceData()) // DON'T DO THIS
+    it("shortfall", function () {
+        expect(asia.shortfall).equal(5)
+    })
+    it("profit", function () {
+        expect(asia.profit).equal(230)
+    })
+})
 ```
 
 但正如代码注释所说的，我从不这样做。这样做的确能解决一时的问题，但共享测试夹具会使测试间产生交互，这是滋生 bug 的温床——还是你写测试时能遇见的最恶心的 bug 之一。使用了 JavaScript 中的 const 关键字只表明 asia 的引用不可修改，不表明对象的内容也不可修改。如果未来有一个测试改变了这个共享对象，测试就可能时不时失败，因为测试之间会通过共享夹具产生交互，而测试的结果就会受测试运行次序的影响。测试结果的这种不确定性，往往使你陷入漫长而又艰难的调试，严重时甚至可能令你对测试体系的信心产生动摇。因此，我比较推荐采取下面的做法：
 
 ```js
 describe("province", function () {
-  let asia;
-  beforeEach(function () {
-    asia = new Province(sampleProvinceData());
-  });
-  it("shortfall", function () {
-    expect(asia.shortfall).equal(5);
-  });
-  it("profit", function () {
-    expect(asia.profit).equal(230);
-  });
-});
+    let asia
+    beforeEach(function () {
+        asia = new Province(sampleProvinceData())
+    })
+    it("shortfall", function () {
+        expect(asia.shortfall).equal(5)
+    })
+    it("profit", function () {
+        expect(asia.profit).equal(230)
+    })
+})
 ```
 
 beforeEach 子句会在每个测试之前运行一遍，将 asia 变量清空，每次都给它赋一个新的值。这样我就能在每个测试开始前，为它们各自构建一套新的测试夹具，这保证了测试的独立性，避免了可能带来麻烦的不确定性。
@@ -333,18 +351,17 @@ beforeEach 子句会在每个测试之前运行一遍，将 asia 变量清空，
 
 ```js
 describe('province'...
-  it('change production', function() {
-  asia.producers[0].production = 20;
-  expect(asia.shortfall).equal(-6);
-  expect(asia.profit).equal(292);
+    it('change production', function() {
+    asia.producers[0].production = 20;
+    expect(asia.shortfall).equal(-6);
+    expect(asia.profit).equal(292);
 });
 ```
 
 这是一个常见的测试模式。我拿到 beforeEach 配置好的初始标准夹具，然后对该夹具进行必要的检查，最后验证它是否表现出我期望的行为。如果你读过测试相关的资料，就会经常听到各种类似的术语，比如配置-检查-验证（setup-exercise-verify）、given-when-then 或者准备-行为-断言（arrange-act-assert）等。有时你能在一个测试里见到所有的步骤，有时那些早期的公用阶段会被提到一些标准的配置步骤里，诸如 beforeEach 等。
 
 > **Tip**  
-（其实还有第四个阶段，只是不那么明显，一般很少提及，那就是拆除阶段。此阶段可将测试夹具移除，以确保不同测试之间不会产生交互。因为我是在 beforeEach 中配置好数据的，所以测试框架会默认在不同的测试间将我的测试夹具移除，相当于我自动享受了拆除阶段带来的便利。多数测试文献的作者对拆除阶段一笔带过，这可以理解，因为多数时候我们可以忽略它。但有时因为创建缓慢等原因，我们会在不同的测试间共享测试夹具，此时，显式地声明一个拆除操作就是很重要的。）
-
+> （其实还有第四个阶段，只是不那么明显，一般很少提及，那就是拆除阶段。此阶段可将测试夹具移除，以确保不同测试之间不会产生交互。因为我是在 beforeEach 中配置好数据的，所以测试框架会默认在不同的测试间将我的测试夹具移除，相当于我自动享受了拆除阶段带来的便利。多数测试文献的作者对拆除阶段一笔带过，这可以理解，因为多数时候我们可以忽略它。但有时因为创建缓慢等原因，我们会在不同的测试间共享测试夹具，此时，显式地声明一个拆除操作就是很重要的。）
 
 在这个测试中，我在一个 it 语句里验证了两个不同的特性。作为一个基本规则，一个 it 语句中最好只有一个验证语句，否则测试可能在进行第一个验证时就失败，这通常会掩盖一些重要的错误信息，不利于你了解测试失败的原因。不过，在上面的场景中，我觉得两个断言本身关系非常紧密，写在同一个测试中问题不大。如果稍后需要将它们分离到不同的 it 语句中，我可以到时再做。
 
@@ -355,45 +372,46 @@ describe('province'...
 无论何时，当我拿到一个集合（比如说此例中的生产商集合）时，我总想看看集合为空时会发生什么。
 
 ```js
-describe('no producers', function() {
- let noProducers;
- beforeEach(function() {
-  const data = {
-   name: "No proudcers",
-   producers: [],
-   demand: 30,
-   price: 20
-  };
-  noProducers = new Province(data);
- });
- it('shortfall', function() {
-  expect(noProducers.shortfall).equal(30);
- });
- it('profit', function() {
-  expect(noProducers.profit).equal(0);
- });
+describe("no producers", function () {
+    let noProducers
+    beforeEach(function () {
+        const data = {
+            name: "No proudcers",
+            producers: [],
+            demand: 30,
+            price: 20
+        }
+        noProducers = new Province(data)
+    })
+    it("shortfall", function () {
+        expect(noProducers.shortfall).equal(30)
+    })
+    it("profit", function () {
+        expect(noProducers.profit).equal(0)
+    })
+})
 ```
 
 如果拿到的是数值类型，0 会是不错的边界条件：
 
 ```js
-describe('province'...
-  it('zero demand', function() {
- asia.demand = 0;
-  expect(asia.shortfall).equal(-25);
-  expect(asia.profit).equal(0);
- });
+describe("province"...
+    it("zero demand", function () {
+        asia.demand = 0
+        expect(asia.shortfall).equal(-25)
+        expect(asia.profit).equal(0)
+    })
 ```
 
 负值同样值得一试：
 
 ```js
 describe('province'...
-  it('negative demand', function() {
- asia.demand = -1;
- expect(asia.shortfall).equal(-26);
- expect(asia.profit).equal(-10);
-});
+    it('negative demand', function() {
+        asia.demand = -1;
+        expect(asia.shortfall).equal(-26);
+        expect(asia.profit).equal(-10);
+    });
 ```
 
 测试到这里，我不禁有一个想法：对于这个业务领域来讲，提供一个负的需求值，并算出一个负的利润值意义何在？最小的需求量不应该是 0 吗？或许，设值方法需要对负值有些不同的行为，比如抛出错误，或总是将值设置为 0。这些问题都很好，编写这样的测试能帮助我思考代码本应如何应对边界场景。
@@ -401,16 +419,15 @@ describe('province'...
 设值函数接收的字符串是从 UI 上的字段读来的，它已经被限制为只能填入数字，但仍然有可能是空字符串，因此同样需要测试来保证代码对空字符串的处理方式符合我的期望。
 
 > **Tip**  
-考虑可能出错的边界条件，把测试火力集中在那儿。
-
+> 考虑可能出错的边界条件，把测试火力集中在那儿。
 
 ```js
 describe('province'...
-  it('empty string demand', function() {
- asia.demand = "";
- expect(asia.shortfall).NaN;
- expect(asia.profit).NaN;
-});
+    it('empty string demand', function() {
+        asia.demand = "";
+        expect(asia.shortfall).NaN;
+        expect(asia.profit).NaN;
+    });
 ```
 
 可以看到，我在这里扮演“程序公敌”的角色。我积极思考如何破坏代码。我发现这种思维能够提高生产力，并且很有趣——它纵容了我内心中比较促狭的那一部分。
@@ -418,17 +435,18 @@ describe('province'...
 这个测试结果很有意思：
 
 ```js
-describe('string for producers', function() {
- it('', function() {
-  const data = {
-   name: "String producers",
-   producers: "",
-   demand: 30,
-   price: 20
-  };
-  const prov = new Province(data);
-  expect(prov.shortfall).equal(0);
- });
+describe("string for producers", function () {
+    it("", function () {
+        const data = {
+            name: "String producers",
+            producers: "",
+            demand: 30,
+            price: 20
+        }
+        const prov = new Province(data)
+        expect(prov.shortfall).equal(0)
+    })
+})
 ```
 
 它并不是抛出一个简单的错误说缺额的值不为 0。控制台的报错输出实际如下：
@@ -452,14 +470,12 @@ Mocha 把这也当作测试失败（failure），但多数测试框架会把它�
 如果这样的测试是在重构前写出的，那么我很可能还会删掉它。重构应该保证可观测的行为不发生改变，而类似的错误已经超越可观测的范畴。删掉这条测试，我就不用担心重构过程改变了代码对这个边界条件的处理方式。
 
 > **Tip**  
-如果这个错误会导致脏数据在应用中到处传递，或是产生一些很难调试的失败，我可能会用引入断言（302）手法，使代码不满足预设条件时快速失败。我不会为这样的失败断言添加测试，它们本身就是一种测试的形式。
-
+> 如果这个错误会导致脏数据在应用中到处传递，或是产生一些很难调试的失败，我可能会用引入断言（302）手法，使代码不满足预设条件时快速失败。我不会为这样的失败断言添加测试，它们本身就是一种测试的形式。
 
 什么时候应该停下来？我相信这样的话你已经听过很多次：“任何测试都不能证明一个程序没有 bug。”确实如此，但这并不影响“测试可以提高编程速度”。我曾经见过好几种测试规则建议，其目的都是保证你能够测试所有情况的一切组合。这些东西值得一看，但是别让它们影响你。当测试数量达到一定程度之后，继续增加测试带来的边际效用会递减；如果试图编写太多测试，你也可能因为工作量太大而气馁，最后什么都写不成。你应该把测试集中在可能出错的地方。观察代码，看哪儿变得复杂；观察函数，思考哪些地方可能出错。是的，你的测试不可能找出所有 bug，但一旦进行重构，你可以更好地理解整个程序，从而找到更多 bug。虽然在开始重构之前我会确保有一个测试套件存在，但前进途中我总会加入更多测试。
 
 > **Tip**  
-不要因为测试无法捕捉所有的 bug 就不写测试，因为测试的确可以捕捉到大多数 bug。
-
+> 不要因为测试无法捕捉所有的 bug 就不写测试，因为测试的确可以捕捉到大多数 bug。
 
 ## 4.7 测试远不止如此
 
@@ -472,8 +488,7 @@ Mocha 把这也当作测试失败（failure），但多数测试框架会把它�
 一个常见的问题是，“要写多少测试才算足够？”这个问题没有很好的衡量标准。有些人拥护以测试覆盖率[mf-tc]作为指标，但测试覆盖率的分析只能识别出那些未被测试覆盖到的代码，而不能用来衡量一个测试集的质量高低。
 
 > **Tip**  
-每当你收到 bug 报告，请先写一个单元测试来暴露这个 bug。
-
+> 每当你收到 bug 报告，请先写一个单元测试来暴露这个 bug。
 
 一个测试集是否足够好，最好的衡量标准其实是主观的，请你试问自己：如果有人在代码里引入了一个缺陷，你有多大的自信它能被测试集揪出来？这种信心难以被定量分析，盲目自信不应该被计算在内，但自测试代码的全部目标，就是要帮你获得此种信心。如果我重构完代码，看见全部变绿的测试就可以十分自信没有引入额外的 bug，这样，我就可以高兴地说，我已经有了一套足够好的测试。
 
