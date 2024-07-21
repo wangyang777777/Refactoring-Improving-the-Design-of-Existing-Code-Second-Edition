@@ -57,32 +57,34 @@
 下面这个简单的函数用于打印账单详情。
 
 ```js
-function statement (invoice, plays) {
+function statement(invoice, plays) {
   let totalAmount = 0;
   let volumeCredits = 0;
   let result = `Statement for ${invoice.customer}\n`;
-  const format = new Intl.NumberFormat("en-US",
-                        { style: "currency", currency: "USD",
-                          minimumFractionDigits: 2 }).format;
+  const format = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+  }).format;
   for (let perf of invoice.performances) {
     const play = plays[perf.playID];
     let thisAmount = 0;
 
     switch (play.type) {
-    case "tragedy":
-      thisAmount = 40000;
-      if (perf.audience > 30) {
-        thisAmount += 1000 * (perf.audience - 30);
-      }
-      break;
-    case "comedy":
-      thisAmount = 30000;
-      if (perf.audience > 20) {
-        thisAmount += 10000 + 500 * (perf.audience - 20);
-      }
-      thisAmount += 300 * perf.audience;
-      break;
-    default:
+      case "tragedy":
+        thisAmount = 40000;
+        if (perf.audience > 30) {
+          thisAmount += 1000 * (perf.audience - 30);
+        }
+        break;
+      case "comedy":
+        thisAmount = 30000;
+        if (perf.audience > 20) {
+          thisAmount += 10000 + 500 * (perf.audience - 20);
+        }
+        thisAmount += 300 * perf.audience;
+        break;
+      default:
         throw new Error(`unknown type: ${play.type}`);
     }
 
@@ -92,10 +94,12 @@ function statement (invoice, plays) {
     if ("comedy" === play.type) volumeCredits += Math.floor(perf.audience / 5);
 
     // print line for this order
-    result += ` ${play.name}: ${format(thisAmount/100)} (${perf.audience} seats)\n`;
+    result += ` ${play.name}: ${format(thisAmount / 100)} (${
+      perf.audience
+    } seats)\n`;
     totalAmount += thisAmount;
   }
-  result += `Amount owed is ${format(totalAmount/100)}\n`;
+  result += `Amount owed is ${format(totalAmount / 100)}\n`;
   result += `You earned ${volumeCredits} credits\n`;
   return result;
 }
@@ -120,9 +124,8 @@ You earned 47 credits
 
 因此，如果我需要修改一个有几百行代码的程序，我会期望它有良好的结构，并且已经被分解成一系列函数和其他程序要素，这能帮我更易于清楚地了解这段代码在做什么。如果程序杂乱无章，先为它整理出结构来，再做需要的修改，通常来说更加简单。
 
-> **Tip**    
+> **Tip**  
 > 如果你要给程序添加一个特性，但发现代码因缺乏良好的结构而不易于进行更改，那就先重构那个程序，使其比较容易添加该特性，然后再添加该特性。
-
 
 在这个例子里，我们的用户希望对系统做几个修改。首先，他们希望以 HTML 格式输出详单。现在请你想一想，这个变化会带来什么影响。对于每处追加字符串到 result 变量的地方我都得为它们添加分支逻辑。这会为函数引入更多复杂度。遇到这种需求时，很多人会选择直接复制整个方法，在其中修改输出 HTML 的部分。复制一遍代码似乎不算太难，但却给未来留下各种隐患：一旦计费逻辑发生变化，我就得同时修改两个地方，以保证它们逻辑相同。如果你编写的是一个永不需要修改的程序，这样剪剪贴贴就还好。但如果程序要保存很长时间，那么重复的逻辑就会造成潜在的威胁。
 
@@ -141,8 +144,7 @@ statement 函数的返回值是一个字符串，我做的就是创建几张新�
 测试过程中很重要的一部分，就是测试程序对于结果的报告方式。它们要么变绿，表示所有新字符串都和参考字符串一样，要么就变红，然后列出失败清单，显示问题字符串的出现行号。这些测试都能够自我检验。使测试能自我检验至关重要，否则就得耗费大把时间来回比对，这会降低开发速度。现代的测试框架都提供了丰富的设施，支持编写和运行能够自我检验的测试。
 
 > **Tip**  
-重构前，先检查自己是否有一套可靠的测试集。这些测试必须有自我检验能力。
-
+> 重构前，先检查自己是否有一套可靠的测试集。这些测试必须有自我检验能力。
 
 进行重构时，我需要依赖测试。我将测试视为 bug 检测器，它们能保护我不被自己犯的错误所困扰。把我想要达成的目标写两遍——代码里写一遍，测试里再写一遍——我就得犯两遍同样的错误才能骗过检测器。这降低了我犯错的概率，因为我对工作进行了二次确认。尽管编写测试需要花费时间，但却为我节省下可观的调试时间。构筑测试体系对重构来说实在太重要了，因此我将用第 4 章一整章的笔墨来详细讨论它。
 
@@ -151,32 +153,34 @@ statement 函数的返回值是一个字符串，我做的就是创建几张新�
 每当看到这样长长的函数，我便下意识地想从整个函数中分离出不同的关注点。第一个引起我注意的就是中间那段 switch 语句。
 
 ```js
-function statement (invoice, plays) {
+function statement(invoice, plays) {
   let totalAmount = 0;
   let volumeCredits = 0;
   let result = `Statement for ${invoice.customer}\n`;
-  const format = new Intl.NumberFormat("en-US",
-                        { style: "currency", currency: "USD",
-                          minimumFractionDigits: 2 }).format;
+  const format = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+  }).format;
   for (let perf of invoice.performances) {
     const play = plays[perf.playID];
     let thisAmount = 0;
 
     switch (play.type) {
-    case "tragedy":
-      thisAmount = 40000;
-      if (perf.audience > 30) {
-        thisAmount += 1000 * (perf.audience - 30);
-      }
-      break;
-    case "comedy":
-      thisAmount = 30000;
-      if (perf.audience > 20) {
-        thisAmount += 10000 + 500 * (perf.audience - 20);
-      }
-      thisAmount += 300 * perf.audience;
-      break;
-    default:
+      case "tragedy":
+        thisAmount = 40000;
+        if (perf.audience > 30) {
+          thisAmount += 1000 * (perf.audience - 30);
+        }
+        break;
+      case "comedy":
+        thisAmount = 30000;
+        if (perf.audience > 20) {
+          thisAmount += 10000 + 500 * (perf.audience - 20);
+        }
+        thisAmount += 300 * perf.audience;
+        break;
+      default:
         throw new Error(`unknown type: ${play.type}`);
     }
 
@@ -186,10 +190,12 @@ function statement (invoice, plays) {
     if ("comedy" === play.type) volumeCredits += Math.floor(perf.audience / 5);
 
     // print line for this order
-    result += ` ${play.name}: ${format(thisAmount/100)} (${perf.audience} seats)\n`;
+    result += ` ${play.name}: ${format(thisAmount / 100)} (${
+      perf.audience
+    } seats)\n`;
     totalAmount += thisAmount;
   }
-  result += `Amount owed is ${format(totalAmount/100)}\n`;
+  result += `Amount owed is ${format(totalAmount / 100)}\n`;
   result += `You earned ${volumeCredits} credits\n`;
   return result;
 }
@@ -207,20 +213,20 @@ function statement (invoice, plays) {
 function amountFor(perf, play) {
   let thisAmount = 0;
   switch (play.type) {
-  case "tragedy":
-    thisAmount = 40000;
-    if (perf.audience > 30) {
-      thisAmount += 1000 * (perf.audience - 30);
-    }
-    break;
-  case "comedy":
-    thisAmount = 30000;
-    if (perf.audience > 20) {
-      thisAmount += 10000 + 500 * (perf.audience - 20);
-    }
-    thisAmount += 300 * perf.audience;
-    break;
-  default:
+    case "tragedy":
+      thisAmount = 40000;
+      if (perf.audience > 30) {
+        thisAmount += 1000 * (perf.audience - 30);
+      }
+      break;
+    case "comedy":
+      thisAmount = 30000;
+      if (perf.audience > 20) {
+        thisAmount += 10000 + 500 * (perf.audience - 20);
+      }
+      thisAmount += 300 * perf.audience;
+      break;
+    default:
       throw new Error(`unknown type: ${play.type}`);
   }
   return thisAmount;
@@ -262,14 +268,12 @@ function statement (invoice, plays) {
 做完这个改动后，我会马上编译并执行一遍测试，看看有无破坏了其他东西。无论每次重构多么简单，养成重构后即运行测试的习惯非常重要。犯错误是很容易的——至少我知道我是很容易犯错的。做完一次修改就运行测试，这样在我真的犯了错时，只需要考虑一个很小的改动范围，这使得查错与修复问题易如反掌。这就是重构过程的精髓所在：小步修改，每次修改后就运行测试。如果我改动了太多东西，犯错时就可能陷入麻烦的调试，并为此耗费大把时间。小步修改，以及它带来的频繁反馈，正是防止混乱的关键。
 
 > **Tip**  
-这里我使用的“编译”一词，指的是将 JavaScript 变为可执行代码之前的所有步骤。虽然 JavaScript 可以直接执行，有时可能不需任何步骤，但有时可能需要将代码移动到一个输出目录，或使用 Babel 这样的代码处理器等。
-
+> 这里我使用的“编译”一词，指的是将 JavaScript 变为可执行代码之前的所有步骤。虽然 JavaScript 可以直接执行，有时可能不需任何步骤，但有时可能需要将代码移动到一个输出目录，或使用 Babel 这样的代码处理器等。
 
 因为是 JavaScript，我可以直接将 amountFor 提炼成为 statement 的一个内嵌函数。这个特性十分有用，因为我就不需要再把外部作用域中的数据传给新提炼的函数。这个示例中可能区别不大，但也是少了一件要操心的事。
 
 > **Tip**  
-重构技术就是以微小的步伐修改程序。如果你犯下错误，很容易便可发现它。
-
+> 重构技术就是以微小的步伐修改程序。如果你犯下错误，很容易便可发现它。
 
 做完上面的修改，测试是通过的，因此下一步我要把代码提交到本地的版本控制系统。我会使用诸如 git 或 mercurial 这样的版本控制系统，因为它们可以支持本地提交。每次成功的重构后我都会提交代码，如果待会不小心搞砸了，我便能轻松回滚到上一个可工作的状态。把代码推送（push）到远端仓库前，我会把零碎的修改压缩成一个更有意义的提交（commit）。
 
@@ -283,20 +287,20 @@ function statement (invoice, plays) {
 function amountFor(perf, play) {
   let result = 0;
   switch (play.type) {
-  case "tragedy":
-    result = 40000;
-    if (perf.audience > 30) {
-      result += 1000 * (perf.audience - 30);
-    }
-    break;
-  case "comedy":
-    result = 30000;
-    if (perf.audience > 20) {
-      result += 10000 + 500 * (perf.audience - 20);
-    }
-    result += 300 * perf.audience;
-    break;
-  default:
+    case "tragedy":
+      result = 40000;
+      if (perf.audience > 30) {
+        result += 1000 * (perf.audience - 30);
+      }
+      break;
+    case "comedy":
+      result = 30000;
+      if (perf.audience > 20) {
+        result += 10000 + 500 * (perf.audience - 20);
+      }
+      result += 300 * perf.audience;
+      break;
+    default:
       throw new Error(`unknown type: ${play.type}`);
   }
   return result;
@@ -311,20 +315,20 @@ function amountFor(perf, play) {
 function amountFor(aPerformance, play) {
   let result = 0;
   switch (play.type) {
-  case "tragedy":
-    result = 40000;
-    if (aPerformance.audience > 30) {
-      result += 1000 * (aPerformance.audience - 30);
-    }
-    break;
-  case "comedy":
-    result = 30000;
-    if (aPerformance.audience > 20) {
-      result += 10000 + 500 * (aPerformance.audience - 20);
-    }
-    result += 300 * aPerformance.audience;
-    break;
-  default:
+    case "tragedy":
+      result = 40000;
+      if (aPerformance.audience > 30) {
+        result += 1000 * (aPerformance.audience - 30);
+      }
+      break;
+    case "comedy":
+      result = 30000;
+      if (aPerformance.audience > 20) {
+        result += 10000 + 500 * (aPerformance.audience - 20);
+      }
+      result += 300 * aPerformance.audience;
+      break;
+    default:
       throw new Error(`unknown type: ${play.type}`);
   }
   return result;
@@ -334,8 +338,7 @@ function amountFor(aPerformance, play) {
 这是我的另一个编码风格。使用一门动态类型语言（如 JavaScript）时，跟踪变量的类型很有意义。因此，我为参数取名时都默认带上其类型名。一般我会使用不定冠词修饰它，除非命名中另有解释其角色的相关信息。这个习惯是从 Kent Beck 那里学的[Beck SBPP]，到现在我还一直觉得很有用。
 
 > **Tip**  
-傻瓜都能写出计算机可以理解的代码。唯有能写出人类容易理解的代码的，才是优秀的程序员。
-
+> 傻瓜都能写出计算机可以理解的代码。唯有能写出人类容易理解的代码的，才是优秀的程序员。
 
 这次改名是否值得我大费周章呢？当然值得。好代码应能清楚地表明它在做什么，而变量命名是代码清晰的关键。只要改名能够提升代码的可读性，那就应该毫不犹豫去做。有好的查找替换工具在手，改名通常并不困难；此外，你的测试以及语言本身的静态类型支持，都可以帮你揪出漏改的地方。如今有了自动化的重构工具，即便要给一个被大量调用的函数改名，通常也不在话下。
 
@@ -421,20 +424,20 @@ function statement (invoice, plays) {
 function amountFor(aPerformance, play) {
   let result = 0;
   switch (playFor(aPerformance).type) {
-  case "tragedy":
-    result = 40000;
-    if (aPerformance.audience > 30) {
-      result += 1000 * (aPerformance.audience - 30);
-    }
-    break;
-  case "comedy":
-    result = 30000;
-    if (aPerformance.audience > 20) {
-      result += 10000 + 500 * (aPerformance.audience - 20);
-    }
-    result += 300 * aPerformance.audience;
-    break;
-  default:
+    case "tragedy":
+      result = 40000;
+      if (aPerformance.audience > 30) {
+        result += 1000 * (aPerformance.audience - 30);
+      }
+      break;
+    case "comedy":
+      result = 30000;
+      if (aPerformance.audience > 20) {
+        result += 10000 + 500 * (aPerformance.audience - 20);
+      }
+      result += 300 * aPerformance.audience;
+      break;
+    default:
       throw new Error(`unknown type: ${playFor(aPerformance).type}`);
   }
   return result;
@@ -473,23 +476,23 @@ function statement (invoice, plays) {
 #### function statement...
 
 ```js
-function amountFor(aPerformance , play ) {
+function amountFor(aPerformance, play) {
   let result = 0;
   switch (playFor(aPerformance).type) {
-  case "tragedy":
-    result = 40000;
-    if (aPerformance.audience > 30) {
-      result += 1000 * (aPerformance.audience - 30);
-    }
-    break;
-  case "comedy":
-    result = 30000;
-    if (aPerformance.audience > 20) {
-      result += 10000 + 500 * (aPerformance.audience - 20);
-    }
-    result += 300 * aPerformance.audience;
-    break;
-  default:
+    case "tragedy":
+      result = 40000;
+      if (aPerformance.audience > 30) {
+        result += 1000 * (aPerformance.audience - 30);
+      }
+      break;
+    case "comedy":
+      result = 30000;
+      if (aPerformance.audience > 20) {
+        result += 10000 + 500 * (aPerformance.audience - 20);
+      }
+      result += 300 * aPerformance.audience;
+      break;
+    default:
       throw new Error(`unknown type: ${playFor(aPerformance).type}`);
   }
   return result;
@@ -676,8 +679,7 @@ function statement (invoice, plays) {
 ```
 
 > **Tip**  
-尽管将函数变量改变成函数声明也是一种重构手法，但我既未为此手法命名，也未将它纳入重构名录。还有很多的重构手法我都觉得没那么重要。我觉得上面这个函数改名的手法既十分简单又不太常用，不值得在重构名录中占有一席之地。
-
+> 尽管将函数变量改变成函数声明也是一种重构手法，但我既未为此手法命名，也未将它纳入重构名录。还有很多的重构手法我都觉得没那么重要。我觉得上面这个函数改名的手法既十分简单又不太常用，不值得在重构名录中占有一席之地。
 
 我对提炼得到的函数名称不很满意——format 未能清晰地描述其作用。formatAsUSD 很表意，但又太长，特别它仅是小范围地被用在一个字符串模板中。我认为这里真正需要强调的是，它格式化的是一个货币数字，因此我选取了一个能体现此意图的命名，并应用了改变函数声明（124）手法。
 
@@ -915,10 +917,12 @@ function totalVolumeCredits() {
 重构至此，是时候停下来欣赏一下代码的全貌了。
 
 ```js
-function statement (invoice, plays) {
+function statement(invoice, plays) {
   let result = `Statement for ${invoice.customer}\n`;
   for (let perf of invoice.performances) {
-    result += ` ${playFor(perf).name}: ${usd(amountFor(perf))} (${perf.audience} seats)\n`;
+    result += ` ${playFor(perf).name}: ${usd(amountFor(perf))} (${
+      perf.audience
+    } seats)\n`;
   }
   result += `Amount owed is ${usd(totalAmount())}\n`;
   result += `You earned ${totalVolumeCredits()} credits\n`;
@@ -939,14 +943,17 @@ function statement (invoice, plays) {
     return result;
   }
   function usd(aNumber) {
-    return new Intl.NumberFormat("en-US",
-                        { style: "currency", currency: "USD",
-                          minimumFractionDigits: 2 }).format(aNumber/100);
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
+    }).format(aNumber / 100);
   }
   function volumeCreditsFor(aPerformance) {
     let result = 0;
     result += Math.max(aPerformance.audience - 30, 0);
-    if ("comedy" === playFor(aPerformance).type) result += Math.floor(aPerformance.audience / 5);
+    if ("comedy" === playFor(aPerformance).type)
+      result += Math.floor(aPerformance.audience / 5);
     return result;
   }
   function playFor(aPerformance) {
@@ -955,21 +962,21 @@ function statement (invoice, plays) {
   function amountFor(aPerformance) {
     let result = 0;
     switch (playFor(aPerformance).type) {
-    case "tragedy":
-      result = 40000;
-      if (aPerformance.audience > 30) {
-        result += 1000 * (aPerformance.audience - 30);
-      }
-      break;
-    case "comedy":
-      result = 30000;
-      if (aPerformance.audience > 20) {
-        result += 10000 + 500 * (aPerformance.audience - 20);
-      }
-      result += 300 * aPerformance.audience;
-      break;
-    default:
-      throw new Error(`unknown type: ${playFor(aPerformance).type}`);
+      case "tragedy":
+        result = 40000;
+        if (aPerformance.audience > 30) {
+          result += 1000 * (aPerformance.audience - 30);
+        }
+        break;
+      case "comedy":
+        result = 30000;
+        if (aPerformance.audience > 20) {
+          result += 10000 + 500 * (aPerformance.audience - 20);
+        }
+        result += 300 * aPerformance.audience;
+        break;
+      default:
+        throw new Error(`unknown type: ${playFor(aPerformance).type}`);
     }
     return result;
   }
@@ -1098,7 +1105,7 @@ function totalVolumeCredits() {
 现在，我希望“剧目名称”信息也从中转数据中获得。为此，需要使用 play 中的数据填充 aPerformance 对象（记得编译、测试、提交）。
 
 ```js
-function statement (invoice, plays) {
+function statement(invoice, plays) {
   const statementData = {};
   statementData.customer = invoice.customer;
   statementData.performances = invoice.performances.map(enrichPerformance);
@@ -1114,8 +1121,8 @@ function statement (invoice, plays) {
 现在我只是简单地返回了一个 aPerformance 对象的副本，但马上我就会往这条记录中添加新的数据。返回副本的原因是，我不想修改传给函数的参数，我总是尽量保持数据不可变（immutable）——可变的状态会很快变成烫手的山芋。
 
 > **Tip**  
-在不熟悉 JavaScript 的人看来，result = Object.assign({}, aPerformance)的写法可能十分奇怪。它返回的是一个浅副本。虽然我更希望有个函数来完成此功能，但这个用法已经约定俗成，如果我自己写个函数，在 JavaScript 程序员看来反而会格格不入。
-::：
+> 在不熟悉 JavaScript 的人看来，result = Object.assign({}, aPerformance)的写法可能十分奇怪。它返回的是一个浅副本。虽然我更希望有个函数来完成此功能，但这个用法已经约定俗成，如果我自己写个函数，在 JavaScript 程序员看来反而会格格不入。
+> ::：
 
 现在我们已经有了安放 play 字段的地方，可以把数据放进去。我需要对 playFor 和 statement 函数应用搬移函数（198）（然后编译、测试、提交）。
 
@@ -1140,7 +1147,9 @@ function playFor(aPerformance) {
 ```js
 let result = `Statement for ${data.customer}\n`;
 for (let perf of data.performances) {
-  result += ` ${perf.play.name}: ${usd(amountFor(perf))} (${perf.audience} seats)\n`;
+  result += ` ${perf.play.name}: ${usd(amountFor(perf))} (${
+    perf.audience
+  } seats)\n`;
 }
 result += `Amount owed is ${usd(totalAmount())}\n`;
 result += `You earned ${totalVolumeCredits()} credits\n`;
@@ -1149,28 +1158,29 @@ return result;
 function volumeCreditsFor(aPerformance) {
   let result = 0;
   result += Math.max(aPerformance.audience - 30, 0);
-  if ("comedy" === aPerformance.play.type) result += Math.floor(aPerformance.audience / 5);
+  if ("comedy" === aPerformance.play.type)
+    result += Math.floor(aPerformance.audience / 5);
   return result;
 }
 
-function amountFor(aPerformance){
+function amountFor(aPerformance) {
   let result = 0;
   switch (aPerformance.play.type) {
-  case "tragedy":
-    result = 40000;
-    if (aPerformance.audience > 30) {
-      result += 1000 * (aPerformance.audience - 30);
-    }
-    break;
-  case "comedy":
-    result = 30000;
-    if (aPerformance.audience > 20) {
-      result += 10000 + 500 * (aPerformance.audience - 20);
-    }
-    result += 300 * aPerformance.audience;
-    break;
-  default:
-    throw new Error(`unknown type: ${aPerformance.play.type}`);
+    case "tragedy":
+      result = 40000;
+      if (aPerformance.audience > 30) {
+        result += 1000 * (aPerformance.audience - 30);
+      }
+      break;
+    case "comedy":
+      result = 30000;
+      if (aPerformance.audience > 20) {
+        result += 10000 + 500 * (aPerformance.audience - 20);
+      }
+      result += 300 * aPerformance.audience;
+      break;
+    default:
+      throw new Error(`unknown type: ${aPerformance.play.type}`);
   }
   return result;
 }
@@ -1278,13 +1288,11 @@ return result;
 #### function renderPlainText...
 
 ```js
-  function totalAmount(data) {
-  return data.performances
-    .reduce((total, p) => total + p.amount, 0);
+function totalAmount(data) {
+  return data.performances.reduce((total, p) => total + p.amount, 0);
 }
 function totalVolumeCredits(data) {
-  return data.performances
-    .reduce((total, p) => total + p.volumeCredits, 0);
+  return data.performances.reduce((total, p) => total + p.volumeCredits, 0);
 }
 ```
 
@@ -1388,16 +1396,13 @@ function htmlStatement(invoice, plays) {
 function renderHtml(data) {
   let result = `<h1>Statement for ${data.customer}</h1>\n`;
   result += "<table>\n";
-  result +=
-    "<tr><th>play</th><th>seats</th><th>cost</th></tr>";
+  result += "<tr><th>play</th><th>seats</th><th>cost</th></tr>";
   for (let perf of data.performances) {
     result += ` <tr><td>${perf.play.name}</td><td>${perf.audience}</td>`;
     result += `<td>${usd(perf.amount)}</td></tr>\n`;
   }
   result += "</table>\n";
-  result += `<p>Amount owed is <em>${usd(
-    data.totalAmount
-  )}</em></p>\n`;
+  result += `<p>Amount owed is <em>${usd(data.totalAmount)}</em></p>\n`;
   result += `<p>You earned <em>${data.totalVolumeCredits}</em> credits</p>\n`;
   return result;
 }
@@ -1471,8 +1476,7 @@ createStatementData.js
 代码行数由我开始重构时的 44 行增加到了 70 行（不算 htmlStatement），这主要是将代码抽取到函数里带来的额外包装成本。虽然代码的行数增加了，但重构也带来了代码可读性的提高。额外的包装将混杂的逻辑分解成可辨别的部分，分离了详单的计算逻辑与样式。这种模块化使我更容易辨别代码的不同部分，了解它们的协作关系。虽说言以简为贵，但可演化的软件却以明确为贵。通过增强代码的模块化，我可以轻易地添加 HTML 版本的代码，而无须重复计算部分的逻辑。
 
 > **Tip**  
-编程时，需要遵循营地法则：保证你离开时的代码库一定比来时更健康。
-
+> 编程时，需要遵循营地法则：保证你离开时的代码库一定比来时更健康。
 
 其实打印逻辑还可以进一步简化，但当前的代码也够用了。我经常需要在所有可做的重构与添加新特性之间寻找平衡。在当今业界，大多数人面临同样的选择时，似乎多以延缓重构而告终——当然这也是一种选择。我的观点则与营地法则无异：保证离开时的代码库一定比你来时更加健康。完美的境界很难达到，但应该时时都勤加拂拭。
 
@@ -1838,7 +1842,7 @@ get volumeCredits() {
 createStatementData.js
 
 ```js
-  export default function createStatementData(invoice, plays) {
+export default function createStatementData(invoice, plays) {
   const result = {};
   result.customer = invoice.customer;
   result.performances = invoice.performances.map(enrichPerformance);
@@ -1847,7 +1851,10 @@ createStatementData.js
   return result;
 
   function enrichPerformance(aPerformance) {
-    const calculator = createPerformanceCalculator(aPerformance, playFor(aPerformance));
+    const calculator = createPerformanceCalculator(
+      aPerformance,
+      playFor(aPerformance)
+    );
     const result = Object.assign({}, aPerformance);
     result.play = calculator.play;
     result.amount = calculator.amount;
@@ -1855,24 +1862,24 @@ createStatementData.js
     return result;
   }
   function playFor(aPerformance) {
-    return plays[aPerformance.playID]
+    return plays[aPerformance.playID];
   }
   function totalAmount(data) {
-    return data.performances
-      .reduce((total, p) => total + p.amount, 0);
+    return data.performances.reduce((total, p) => total + p.amount, 0);
   }
   function totalVolumeCredits(data) {
-    return data.performances
-      .reduce((total, p) => total + p.volumeCredits, 0);
+    return data.performances.reduce((total, p) => total + p.volumeCredits, 0);
   }
 }
 function createPerformanceCalculator(aPerformance, aPlay) {
-    switch(aPlay.type) {
-    case "tragedy": return new TragedyCalculator(aPerformance, aPlay);
-    case "comedy" : return new ComedyCalculator(aPerformance, aPlay);
+  switch (aPlay.type) {
+    case "tragedy":
+      return new TragedyCalculator(aPerformance, aPlay);
+    case "comedy":
+      return new ComedyCalculator(aPerformance, aPlay);
     default:
-        throw new Error(`unknown type: ${aPlay.type}`);
-    }
+      throw new Error(`unknown type: ${aPlay.type}`);
+  }
 }
 class PerformanceCalculator {
   constructor(aPerformance, aPlay) {
@@ -1880,7 +1887,7 @@ class PerformanceCalculator {
     this.play = aPlay;
   }
   get amount() {
-    throw new Error('subclass responsibility');
+    throw new Error("subclass responsibility");
   }
   get volumeCredits() {
     return Math.max(this.performance.audience - 30, 0);
@@ -1927,7 +1934,6 @@ class ComedyCalculator extends PerformanceCalculator {
 我谈论的是如何改善代码，但什么样的代码才算好代码，程序员们有很多争论。我偏爱小的、命名良好的函数，也知道有些人反对这个观点。如果我们说这只关乎美学，只是各花入各眼，没有好坏高低之分，那除了诉诸个人品味，就没有任何客观事实依据了。但我坚信，这不仅关乎个人品味，而且是有客观标准的。我认为，好代码的检验标准就是人们是否能轻而易举地修改它。好代码应该直截了当：有人需要修改代码时，他们应能轻易找到修改点，应该能快速做出更改，而不易引入其他错误。一个健康的代码库能够最大限度地提升我们的生产力，支持我们更快、更低成本地为用户添加新特性。为了保持代码库的健康，就需要时刻留意现状与理想之间的差距，然后通过重构不断接近这个理想。
 
 > **Tip**  
-好代码的检验标准就是人们是否能轻而易举地修改它。
-
+> 好代码的检验标准就是人们是否能轻而易举地修改它。
 
 这个示例告诉我们最重要的一点就是重构的节奏感。无论何时，当我向人们展示我如何重构时，无人不讶异于我的步子之小，并且每一步都保证代码处于编译通过和测试通过的可工作状态。20 年前，当 Kent Beck 在底特律的一家宾馆里向我展示同样的手法时，我也报以同样的震撼。开展高效有序的重构，关键的心得是：小的步子可以更快前进，请保持代码永远处于可工作状态，小步修改累积起来也能大大改善系统的设计。这几点请君牢记，其余的我已无需多言。

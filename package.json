@@ -6,9 +6,9 @@
   "scripts": {
     "serve": "gitbook serve",
     "build": "gitbook build",
-    "pdf": "gitbook pdf . ./ebook/refactoring2.pdf",
-    "epub": "gitbook epub . ./ebook/refactoring2.epub",
-    "mobi": "gitbook mobi . ./ebook/refactoring2.mobi",
+    "pdf": "gitbook pdf . ./ebook/重构-改善既有代码的设计（第2版）.pdf",
+    "epub": "gitbook epub . ./ebook/重构-改善既有代码的设计（第2版）.epub",
+    "mobi": "gitbook mobi . ./ebook/重构-改善既有代码的设计（第2版）.mobi",
     "preebook": "mkdir -p ebook && rm -rfv ebook/*",
     "ebook": "npm run pdf && npm run epub && npm run mobi",
     "predeploy": "npm run build && cp CNAME ./_book/ && npm run ebook && mv ebook ./_book/",
