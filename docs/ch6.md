@@ -1391,7 +1391,7 @@ alerts = readingsOutsideRange(station, operatingPlan.temperatureFloor, operating
 现在我可以开始修改使用参数的代码了。先从“最大值”开始：
 
 ```js
-function readingsOutsideRange(station, min, max, range) {
+function readingsOutsideRange(station, min, ❌max,❌ range) {
     return station.readings.filter((r) => r.temp < min || r.temp > range.max)
 }
 ```
@@ -1400,7 +1400,7 @@ function readingsOutsideRange(station, min, max, range) {
 
 ```js
 const range = new NumberRange(operatingPlan.temperatureFloor, operatingPlan.temperatureCeiling)
-alerts = readingsOutsideRange(station, operatingPlan.temperatureFloor, operatingPlan.temperatureCeiling, range)
+alerts = readingsOutsideRange(station, operatingPlan.temperatureFloor, ❌operatingPlan.temperatureCeiling,❌ range)
 ```
 
 此时要执行测试。如果测试通过，我再接着处理另一个参数。
@@ -1970,10 +1970,10 @@ function priceOrder(product, quantity, shippingMethod) {
     const basePrice = product.basePrice * quantity
     const discount = Math.max(quantity - product.discountThreshold, 0) * product.basePrice * product.discountRate
     const priceData = { basePrice: basePrice }
-    const price = applyShipping(priceData, basePrice, shippingMethod, quantity, discount)
+    const price = applyShipping(priceData, ❌basePrice,❌ shippingMethod, quantity, discount)
     return price
 }
-function applyShipping(priceData, basePrice, shippingMethod, quantity, discount) {
+function applyShipping(priceData, ❌basePrice,❌ shippingMethod, quantity, discount) {
     const shippingPerCase =
         priceData.basePrice > shippingMethod.discountThreshold
             ? shippingMethod.discountedFee
@@ -1993,10 +1993,10 @@ function priceOrder(product, quantity, shippingMethod) {
     const basePrice = product.basePrice * quantity
     const discount = Math.max(quantity - product.discountThreshold, 0) * product.basePrice * product.discountRate
     const priceData = { basePrice: basePrice, quantity: quantity }
-    const price = applyShipping(priceData, shippingMethod, quantity, discount)
+    const price = applyShipping(priceData, shippingMethod, ❌quantity,❌ discount)
     return price
 }
-function applyShipping(priceData, shippingMethod, quantity, discount) {
+function applyShipping(priceData, shippingMethod, ❌quantity,❌ discount) {
     const shippingPerCase =
         priceData.basePrice > shippingMethod.discountThreshold
             ? shippingMethod.discountedFee
@@ -2014,10 +2014,10 @@ function priceOrder(product, quantity, shippingMethod) {
     const basePrice = product.basePrice * quantity
     const discount = Math.max(quantity - product.discountThreshold, 0) * product.basePrice * product.discountRate
     const priceData = { basePrice: basePrice, quantity: quantity, discount: discount }
-    const price = applyShipping(priceData, shippingMethod, discount)
+    const price = applyShipping(priceData, shippingMethod❌, discount❌)
     return price
 }
-function applyShipping(priceData, shippingMethod, discount) {
+function applyShipping(priceData, shippingMethod❌, discount❌) {
     const shippingPerCase =
         priceData.basePrice > shippingMethod.discountThreshold
             ? shippingMethod.discountedFee

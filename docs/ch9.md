@@ -417,7 +417,7 @@ get calculatedProduction() {
 
 ```js
 get production() {
-    assert(this._production === this.calculatedProduction)
+    ❌assert(this._production === this.calculatedProduction)❌
     return this.calculatedProduction
 }
 ```
@@ -439,7 +439,7 @@ get production() {
 ```js
 applyAdjustment(anAdjustment) {
     this._adjustments.push(anAdjustment)
-    this._production += anAdjustment.amount
+    ❌this._production += anAdjustment.amount❌
 }
 ```
 

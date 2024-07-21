@@ -1200,13 +1200,13 @@ return `youngestAge: ${youngest}, totalSalary: ${totalSalary}`
 let youngest = people[0] ? people[0].age : Infinity
 let totalSalary = 0
 for (const p of people) {
-    if (p.age < youngest) youngest = p.age
+    ❌if (p.age < youngest) youngest = p.age❌
     totalSalary += p.salary
 }
 
 for (const p of people) {
     if (p.age < youngest) youngest = p.age
-    totalSalary += p.salary
+    ❌totalSalary += p.salary❌
 }
 
 return `youngestAge: ${youngest}, totalSalary: ${totalSalary}`
@@ -1357,14 +1357,14 @@ function acquireData(input) {
 ```js
 function acquireData(input) {
     const lines = input.split("\n")
-    let firstLine = true
+    ❌let firstLine = true❌
     const result = []
     const loopItems = lines.slice(1)
     for (const line of loopItems) {
-        if (firstLine) {
+        ❌if (firstLine) {
             firstLine = false
             continue
-        }
+        }❌
         if (line.trim() === "") continue
         const record = line.split(",")
         if (record[1].trim() === "India") {
@@ -1385,7 +1385,7 @@ function acquireData(input) {
     const result = []
     const loopItems = lines.slice(1).filter((line) => line.trim() !== "")
     for (const line of loopItems) {
-        if (line.trim() === "") continue
+        ❌if (line.trim() === "") continue❌
         const record = line.split(",")
         if (record[1].trim() === "India") {
             result.push({ city: record[0].trim(), phone: record[2].trim() })
@@ -1408,7 +1408,7 @@ function acquireData(input) {
         .filter((line) => line;.trim() !== "")
         .map((line) => line.split(","))
     for (const line of loopItems) {
-        const record = line;.split(",")
+        const record = line;❌.split(",")❌
         if (record[1].trim() === "India") {
             result.push({ city: record[0].trim(), phone: record[2].trim() })
         }
@@ -1430,9 +1430,9 @@ function acquireData(input) {
         .filter((record) => record[1].trim() === "India")
     for (const line of loopItems) {
         const record = line
-        if (record[1].trim() === "India") {
+        ❌if (record[1].trim() === "India") {❌
             result.push({ city: record[0].trim(), phone: record[2].trim() })
-        }
+        ❌}❌
     }
     return result
 }
@@ -1469,10 +1469,10 @@ function acquireData(input) {
         .map((line) => line.split(","))
         .filter((record) => record[1].trim() === "India")
         .map((record) => ({ city: record[0].trim(), phone: record[2].trim() }))
-    for (const line of loopItems) {
+    ❌for (const line of loopItems) {
         const record = line
         result.push(line)
-    }
+    }❌
     return result
 }
 ```

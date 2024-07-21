@@ -169,9 +169,9 @@ result += `<h1>${getOrganization().name}</h1>`
 完成引用点的替换后，就可以兑现我之前的死亡威胁，为那个名称丑陋的函数送终了。
 
 ```js
-function getRawDataOfOrganization() {
+❌function getRawDataOfOrganization() {
     return organization._data
-}
+}❌
 function getOrganization() {
     return organization
 }
